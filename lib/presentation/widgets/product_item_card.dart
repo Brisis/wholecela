@@ -66,29 +66,6 @@ class ProductItemCard extends StatelessWidget {
                     maxLines: 2,
                   ),
                   verticalSpace(),
-                  // Row(
-                  //   mainAxisAlignment: MainAxisAlignment.start,
-                  //   crossAxisAlignment: CrossAxisAlignment.center,
-                  //   children: [
-                  //     const Icon(
-                  //       Icons.room_outlined,
-                  //       color: kBlackFaded,
-                  //       size: 15,
-                  //     ),
-                  //     Expanded(
-                  //       child: Text(
-                  //         product.locationName,
-                  //         style: const TextStyle(
-                  //           color: kBlackFaded,
-                  //           fontSize: kNormalTextSize,
-                  //         ),
-                  //         overflow: TextOverflow.ellipsis,
-                  //         maxLines: 1,
-                  //       ),
-                  //     ),
-                  //   ],
-                  // ),
-                  verticalSpace(),
                   Text(
                     "\$${product.price}",
                     style: const TextStyle(

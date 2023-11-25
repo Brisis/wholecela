@@ -39,6 +39,23 @@ class _ProductScreenState extends State<ProductScreen> {
   );
 
   TextEditingController controller = TextEditingController();
+  int cartValue = 1;
+
+  void _incrementValue() {
+    if (cartValue < 10) {
+      setState(() {
+        cartValue++;
+      });
+    }
+  }
+
+  void _decrementValue() {
+    if (cartValue > 1) {
+      setState(() {
+        cartValue--;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -154,7 +171,7 @@ class _ProductScreenState extends State<ProductScreen> {
                   ],
                 ),
                 verticalSpace(
-                  height: 30,
+                  height: 15,
                 ),
                 Container(
                   padding: const EdgeInsets.all(5),
@@ -171,36 +188,36 @@ class _ProductScreenState extends State<ProductScreen> {
                   ),
                 ),
                 verticalSpace(
-                  height: 30,
+                  height: 15,
                 ),
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     IconButton(
-                      onPressed: () {},
+                      onPressed: _decrementValue,
                       icon: const Icon(
                         Icons.remove,
                       ),
                     ),
-                    horizontalSpace(width: 15),
-                    const Text(
-                      "1",
-                      style: TextStyle(
+                    horizontalSpace(width: 30),
+                    Text(
+                      "$cartValue",
+                      style: const TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w500,
                       ),
                     ),
-                    horizontalSpace(width: 15),
+                    horizontalSpace(width: 30),
                     IconButton(
-                      onPressed: () {},
+                      onPressed: _incrementValue,
                       icon: const Icon(
                         Icons.add,
                       ),
                     ),
                   ],
                 ),
-                verticalSpace(),
+                verticalSpace(height: 15),
                 Row(
                   children: [
                     Expanded(

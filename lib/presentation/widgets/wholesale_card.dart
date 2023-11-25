@@ -43,44 +43,44 @@ class WholeSaleCard extends StatelessWidget {
                       ),
                     ),
                   ),
-                  const SizedBox(
+                  horizontalSpace(
                     width: 8,
                   ),
-                  const Column(
+                  Column(
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
+                      const Text(
                         "Metropeach Brownee",
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      SizedBox(
+                      verticalSpace(
                         height: 10,
                       ),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.start,
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          Text(
+                          const Text(
                             "200 Products",
                             style: TextStyle(
                               fontSize: 12,
                             ),
                           ),
-                          SizedBox(
+                          horizontalSpace(
                             width: 8,
                           ),
-                          Icon(
+                          const Icon(
                             Icons.brightness_1_rounded,
                             size: 5,
                           ),
-                          SizedBox(
+                          horizontalSpace(
                             width: 8,
                           ),
-                          Text(
+                          const Text(
                             "12 Categories",
                             style: TextStyle(
                               fontSize: 12,

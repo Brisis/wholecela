@@ -2,8 +2,31 @@ import 'package:flutter/material.dart';
 import 'package:wholecela/core/config/constants.dart';
 import 'package:wholecela/presentation/screens/product_screen.dart';
 
-class CartCard extends StatelessWidget {
+class CartCard extends StatefulWidget {
   const CartCard({super.key});
+
+  @override
+  State<CartCard> createState() => _CartCardState();
+}
+
+class _CartCardState extends State<CartCard> {
+  int cartValue = 2;
+
+  void _incrementValue() {
+    if (cartValue < 10) {
+      setState(() {
+        cartValue++;
+      });
+    }
+  }
+
+  void _decrementValue() {
+    if (cartValue > 1) {
+      setState(() {
+        cartValue--;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -43,15 +66,15 @@ class CartCard extends StatelessWidget {
                         ),
                       ),
                     ),
-                    const SizedBox(
+                    horizontalSpace(
                       width: 8,
                     ),
-                    const Expanded(
+                    Expanded(
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.start,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
+                          const Text(
                             "Product name",
                             style: TextStyle(
                               fontSize: 14,
@@ -60,12 +83,12 @@ class CartCard extends StatelessWidget {
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                           ),
-                          SizedBox(
+                          verticalSpace(
                             height: 10,
                           ),
                           Text(
-                            "12 items",
-                            style: TextStyle(
+                            "$cartValue items",
+                            style: const TextStyle(
                               fontSize: 12,
                             ),
                           ),
@@ -81,12 +104,12 @@ class CartCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 IconButton(
-                  onPressed: () {},
+                  onPressed: _decrementValue,
                   icon: const Icon(Icons.remove),
                 ),
                 horizontalSpace(),
                 IconButton(
-                  onPressed: () {},
+                  onPressed: _incrementValue,
                   icon: const Icon(Icons.add),
                 ),
                 horizontalSpace(),
