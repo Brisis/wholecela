@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:wholecela/core/config/constants.dart';
+import 'package:wholecela/presentation/screens/checkout_screen.dart';
 import 'package:wholecela/presentation/screens/profile_screen.dart';
 import 'package:wholecela/presentation/widgets/cart_card.dart';
 
@@ -78,7 +79,7 @@ class _CartScreenState extends State<CartScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const Text(
-                  "23 total items",
+                  "Total Items : 23",
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w500,
@@ -159,7 +160,12 @@ class _CartScreenState extends State<CartScreen> {
                   children: [
                     Expanded(
                       child: ElevatedButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            CheckoutScreen.route(),
+                          );
+                        },
                         child: const Text(
                           "Make Payment",
                         ),

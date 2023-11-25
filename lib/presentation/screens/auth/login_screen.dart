@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:wholecela/core/config/constants.dart';
+import 'package:wholecela/presentation/screens/auth/forgot_screen.dart';
 import 'package:wholecela/presentation/screens/auth/register_screen.dart';
 import 'package:wholecela/presentation/screens/home_screen.dart';
 
@@ -27,7 +28,15 @@ class _LoginScreenState extends State<LoginScreen> {
         padding: const EdgeInsets.all(15.0),
         child: ListView(
           children: [
-            verticalSpace(height: 50),
+            SizedBox(
+              height: 100,
+              child: Image.asset(
+                "assets/icons/icon.png",
+                width: 50,
+                height: 50,
+              ),
+            ),
+            verticalSpace(height: 15),
             const Text(
               "Welcome Back",
               style: TextStyle(
@@ -43,7 +52,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 fontWeight: FontWeight.w500,
               ),
             ),
-            verticalSpace(height: 30),
+            verticalSpace(height: 15),
             TextField(
               controller: emailController,
               decoration: const InputDecoration(
@@ -75,7 +84,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   onPressed: () {
                     Navigator.push(
                       context,
-                      RegisterScreen.route(),
+                      ForgotScreen.route(),
                     );
                   },
                   child: const Text(

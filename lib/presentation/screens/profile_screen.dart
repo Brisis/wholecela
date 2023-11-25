@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:wholecela/presentation/screens/cart_screen.dart';
+import 'package:wholecela/presentation/screens/app_screens/contact_page.dart';
+import 'package:wholecela/presentation/screens/app_screens/tcs_page.dart';
 import 'package:wholecela/core/config/constants.dart';
+import 'package:wholecela/presentation/screens/auth/login_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
   static Route route() {
@@ -45,12 +47,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
         ),
         actions: [
-          IconButton(
-            onPressed: () {},
-            icon: const CircleAvatar(
-              backgroundImage: AssetImage(
-                "assets/images/user.jpg",
-              ),
+          TextButton(
+            onPressed: () {
+              Navigator.pushAndRemoveUntil(
+                context,
+                LoginScreen.route(),
+                ((Route<dynamic> route) => false),
+              );
+            },
+            child: const Text(
+              "Logout",
+              style: TextStyle(color: kWarningColor),
             ),
           ),
         ],
@@ -66,7 +73,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 fontWeight: FontWeight.w500,
               ),
             ),
-            verticalSpace(height: 15),
+            verticalSpace(),
             Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
@@ -175,23 +182,25 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
               ],
             ),
+            // verticalSpace(
+            //   height: 30,
+            // ),
+            // Row(
+            //   mainAxisAlignment: MainAxisAlignment.center,
+            //   children: [
+            //     Expanded(
+            //       child: ElevatedButton(
+            //         onPressed: () {},
+            //         child: const Text(
+            //           "Logout",
+            //           style: TextStyle(color: kWarningColor),
+            //         ),
+            //       ),
+            //     ),
+            //   ],
+            // ),
             verticalSpace(
-              height: 30,
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                ElevatedButton(
-                  onPressed: () {},
-                  child: const Text(
-                    "Logout",
-                    style: TextStyle(color: kWarningColor),
-                  ),
-                ),
-              ],
-            ),
-            verticalSpace(
-              height: 30,
+              height: 15,
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -254,28 +263,50 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         ),
                       ),
                     ),
+                    Padding(
+                      padding: EdgeInsets.only(left: 5.0),
+                      child: Text(
+                        "Status",
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
                   ],
                 ),
                 ...List<TableRow>.generate(
                   5,
-                  (index) => const TableRow(
+                  (index) => TableRow(
                     children: [
-                      Padding(
+                      const Padding(
                         padding: EdgeInsets.only(left: 5.0),
                         child: Text("Product Name"),
                       ),
                       Padding(
-                        padding: EdgeInsets.only(left: 5.0),
-                        child: Text("5"),
+                        padding: const EdgeInsets.only(left: 5.0),
+                        child: Text("$index"),
                       ),
-                      Padding(
+                      const Padding(
                         padding: EdgeInsets.only(left: 5.0),
                         child: Text("892728"),
                       ),
-                      Padding(
+                      const Padding(
                         padding: EdgeInsets.only(left: 5.0),
                         child: Text("\$300"),
                       ),
+                      index == 2
+                          ? Container(
+                              padding: const EdgeInsets.all(3.0),
+                              decoration: const BoxDecoration(
+                                  color: Colors.orangeAccent),
+                              child: Text("INP - EXP: ${index}D"),
+                            )
+                          : Container(
+                              padding: const EdgeInsets.all(3.0),
+                              decoration: const BoxDecoration(
+                                  color: Colors.greenAccent),
+                              child: Text("DEL"),
+                            ),
                     ],
                   ),
                 ),
@@ -284,119 +315,48 @@ class _ProfileScreenState extends State<ProfileScreen> {
             verticalSpace(
               height: 30,
             ),
-            const Text(
-              "Customer Support",
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-            verticalSpace(),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                const Text(
-                  "Call Us",
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
+            Align(
+              alignment: Alignment.bottomCenter,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        ContactScreen.route(),
+                      );
+                    },
+                    child: const Text(
+                      "Contact Us",
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w400,
+                      ),
+                    ),
                   ),
-                ),
-                horizontalSpace(),
-                IconButton(
-                  onPressed: () {},
-                  icon: const Icon(
-                    Icons.call,
-                    size: 16,
+                  Container(
+                    height: 10,
+                    width: 1.0,
+                    color: kBlackFaded,
                   ),
-                ),
-              ],
-            ),
-            verticalSpace(),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                const Text(
-                  "WhatsApp",
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
+                  TextButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        PrivacyTermsAndConditionsScreen.route(),
+                      );
+                    },
+                    child: const Text(
+                      "Privacy, T&Cs",
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w400,
+                      ),
+                    ),
                   ),
-                ),
-                horizontalSpace(),
-                IconButton(
-                  onPressed: () {},
-                  icon: const Icon(
-                    Icons.wechat_sharp,
-                    size: 16,
-                  ),
-                ),
-              ],
-            ),
-            verticalSpace(),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                const Text(
-                  "Facebook",
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-                horizontalSpace(),
-                IconButton(
-                  onPressed: () {},
-                  icon: const Icon(
-                    Icons.facebook,
-                    size: 16,
-                  ),
-                ),
-              ],
-            ),
-            verticalSpace(),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                const Text(
-                  "Email",
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-                horizontalSpace(),
-                IconButton(
-                  onPressed: () {},
-                  icon: const Icon(
-                    Icons.mail,
-                    size: 16,
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        shape: const CircleBorder(),
-        onPressed: () {
-          Navigator.push(
-            context,
-            CartScreen.route(),
-          );
-        },
-        tooltip: 'My Cart',
-        child: const Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Icon(Icons.shopping_basket),
-            Text(
-              "12",
-              style: TextStyle(
-                fontSize: 13,
-                fontWeight: FontWeight.w500,
+                ],
               ),
             ),
           ],

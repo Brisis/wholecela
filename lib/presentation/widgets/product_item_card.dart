@@ -60,7 +60,7 @@ class ProductItemCard extends StatelessWidget {
                     product.name,
                     style: const TextStyle(
                       color: kBlackColor,
-                      fontSize: kMediumTextSize,
+                      fontSize: 14,
                       overflow: TextOverflow.ellipsis,
                     ),
                     maxLines: 2,

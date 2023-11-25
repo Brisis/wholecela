@@ -65,10 +65,10 @@ class _WholesaleScreenState extends State<WholesaleScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text(
-              "200 products",
+              "Shop Items - 200",
               style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w500,
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
               ),
             ),
             verticalSpace(height: 15),
@@ -79,6 +79,13 @@ class _WholesaleScreenState extends State<WholesaleScreen> {
                 SizedBox(
                   width: MediaQuery.of(context).size.width * .6,
                   child: CupertinoSearchTextField(
+                    prefixIcon: const Icon(
+                      CupertinoIcons.search,
+                      size: 16,
+                    ),
+                    style: const TextStyle(
+                      fontSize: 14,
+                    ),
                     controller: controller,
                     onChanged: (value) {},
                     onSubmitted: (value) {},

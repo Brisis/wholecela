@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:wholecela/core/config/constants.dart';
+import 'package:wholecela/presentation/screens/app_screens/tcs_page.dart';
 import 'package:wholecela/presentation/screens/auth/login_screen.dart';
 import 'package:wholecela/presentation/screens/home_screen.dart';
 
@@ -28,7 +29,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
         padding: const EdgeInsets.all(15.0),
         child: ListView(
           children: [
-            verticalSpace(height: 50),
+            SizedBox(
+              height: 100,
+              child: Image.asset(
+                "assets/icons/icon.png",
+                width: 50,
+                height: 50,
+              ),
+            ),
+            verticalSpace(height: 15),
             const Text(
               "Register",
               style: TextStyle(
@@ -44,7 +53,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 fontWeight: FontWeight.w500,
               ),
             ),
-            verticalSpace(height: 30),
+            verticalSpace(height: 15),
             TextField(
               controller: nameController,
               decoration: const InputDecoration(
@@ -94,6 +103,26 @@ class _RegisterScreenState extends State<RegisterScreen> {
               },
               title: const Text(
                 "I have read and agreed with Wholecela's terms and conditions",
+                style: TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.normal,
+                ),
+              ),
+            ),
+            verticalSpace(),
+            TextButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  PrivacyTermsAndConditionsScreen.route(),
+                );
+              },
+              child: const Text(
+                "Privacy, terms and conditions",
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w400,
+                ),
               ),
             ),
             verticalSpace(height: 30),
