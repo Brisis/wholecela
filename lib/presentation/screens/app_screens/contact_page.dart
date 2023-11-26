@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:wholecela/core/config/constants.dart';
+import 'package:wholecela/presentation/widgets/menu_drawer.dart';
 
 class ContactScreen extends StatelessWidget {
   static Route route() {
@@ -13,6 +14,7 @@ class ContactScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: kBackgroundColor,
+      drawer: const MenuDrawer(),
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: const Text(

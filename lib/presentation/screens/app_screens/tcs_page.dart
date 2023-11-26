@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:wholecela/core/config/constants.dart';
+import 'package:wholecela/presentation/widgets/menu_drawer.dart';
 
 class PrivacyTermsAndConditionsScreen extends StatelessWidget {
   static Route route() {
@@ -14,6 +15,7 @@ class PrivacyTermsAndConditionsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: kBackgroundColor,
+      drawer: const MenuDrawer(),
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: const Text(

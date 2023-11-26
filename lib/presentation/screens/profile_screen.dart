@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:wholecela/presentation/screens/app_screens/contact_page.dart';
-import 'package:wholecela/presentation/screens/app_screens/tcs_page.dart';
 import 'package:wholecela/core/config/constants.dart';
 import 'package:wholecela/presentation/screens/auth/login_screen.dart';
+import 'package:wholecela/presentation/widgets/menu_drawer.dart';
 
 class ProfileScreen extends StatefulWidget {
   static Route route() {
@@ -37,6 +36,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: kBackgroundColor,
+      drawer: const MenuDrawer(),
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: const Text(
@@ -47,17 +47,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
         ),
         actions: [
-          TextButton(
+          IconButton(
             onPressed: () {
-              Navigator.pushAndRemoveUntil(
+              Navigator.push(
                 context,
-                LoginScreen.route(),
-                ((Route<dynamic> route) => false),
+                ProfileScreen.route(),
               );
             },
-            child: const Text(
-              "Logout",
-              style: TextStyle(color: kWarningColor),
+            icon: const CircleAvatar(
+              backgroundImage: AssetImage(
+                "assets/images/user.jpg",
+              ),
             ),
           ),
         ],
@@ -182,182 +182,28 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
               ],
             ),
-            // verticalSpace(
-            //   height: 30,
-            // ),
-            // Row(
-            //   mainAxisAlignment: MainAxisAlignment.center,
-            //   children: [
-            //     Expanded(
-            //       child: ElevatedButton(
-            //         onPressed: () {},
-            //         child: const Text(
-            //           "Logout",
-            //           style: TextStyle(color: kWarningColor),
-            //         ),
-            //       ),
-            //     ),
-            //   ],
-            // ),
-            verticalSpace(
-              height: 15,
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                const Text(
-                  "Purchase History",
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-                ElevatedButton(
-                  onPressed: () {},
-                  child: const Text(
-                    "Download",
-                  ),
-                ),
-              ],
-            ),
-            verticalSpace(),
-            Table(
-              border: TableBorder.all(color: kGreyColor),
-              children: [
-                const TableRow(
-                  children: [
-                    Padding(
-                      padding: EdgeInsets.only(left: 5.0),
-                      child: Text(
-                        "Name",
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.only(left: 5.0),
-                      child: Text(
-                        "Quantity",
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.only(left: 5.0),
-                      child: Text(
-                        "Invoice #",
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.only(left: 5.0),
-                      child: Text(
-                        "Total",
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.only(left: 5.0),
-                      child: Text(
-                        "Status",
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                ...List<TableRow>.generate(
-                  5,
-                  (index) => TableRow(
-                    children: [
-                      const Padding(
-                        padding: EdgeInsets.only(left: 5.0),
-                        child: Text("Product Name"),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(left: 5.0),
-                        child: Text("$index"),
-                      ),
-                      const Padding(
-                        padding: EdgeInsets.only(left: 5.0),
-                        child: Text("892728"),
-                      ),
-                      const Padding(
-                        padding: EdgeInsets.only(left: 5.0),
-                        child: Text("\$300"),
-                      ),
-                      index == 2
-                          ? Container(
-                              padding: const EdgeInsets.all(3.0),
-                              decoration: const BoxDecoration(
-                                  color: Colors.orangeAccent),
-                              child: Text("INP - EXP: ${index}D"),
-                            )
-                          : Container(
-                              padding: const EdgeInsets.all(3.0),
-                              decoration: const BoxDecoration(
-                                  color: Colors.greenAccent),
-                              child: Text("DEL"),
-                            ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
             verticalSpace(
               height: 30,
             ),
-            Align(
-              alignment: Alignment.bottomCenter,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  TextButton(
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Expanded(
+                  child: ElevatedButton(
                     onPressed: () {
-                      Navigator.push(
+                      Navigator.pushAndRemoveUntil(
                         context,
-                        ContactScreen.route(),
+                        LoginScreen.route(),
+                        ((Route<dynamic> route) => false),
                       );
                     },
                     child: const Text(
-                      "Contact Us",
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w400,
-                      ),
+                      "Logout",
+                      style: TextStyle(color: kWarningColor),
                     ),
                   ),
-                  Container(
-                    height: 10,
-                    width: 1.0,
-                    color: kBlackFaded,
-                  ),
-                  TextButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        PrivacyTermsAndConditionsScreen.route(),
-                      );
-                    },
-                    child: const Text(
-                      "Privacy, T&Cs",
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w400,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+                ),
+              ],
             ),
           ],
         ),

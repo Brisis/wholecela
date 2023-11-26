@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:wholecela/presentation/screens/cart_screen.dart';
+import 'package:wholecela/presentation/screens/cart_combined_screen.dart';
 import 'package:wholecela/core/config/constants.dart';
 import 'package:wholecela/presentation/screens/profile_screen.dart';
+import 'package:wholecela/presentation/widgets/menu_drawer.dart';
 import 'package:wholecela/presentation/widgets/wholesale_card.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -17,12 +18,13 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: kBackgroundColor,
+      drawer: const MenuDrawer(),
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: const Text(
           "Wholecela",
           style: TextStyle(
-            fontWeight: FontWeight.bold,
+            fontWeight: FontWeight.w400,
           ),
         ),
         actions: [
@@ -54,7 +56,7 @@ class HomeScreen extends StatelessWidget {
         onPressed: () {
           Navigator.push(
             context,
-            CartScreen.route(),
+            CartCombinedScreen.route(),
           );
         },
         tooltip: 'My Cart',

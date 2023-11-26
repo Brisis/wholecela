@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:wholecela/core/config/constants.dart';
 import 'package:wholecela/data/models/product.dart';
 import 'package:wholecela/presentation/screens/product_screen.dart';
+import 'package:intl/intl.dart';
 
 class ProductItemCard extends StatelessWidget {
   final Product product;
@@ -67,7 +68,7 @@ class ProductItemCard extends StatelessWidget {
                   ),
                   verticalSpace(),
                   Text(
-                    "\$${product.price}",
+                    formatPrice(product.price),
                     style: const TextStyle(
                       color: kBlackColor,
                       fontSize: kMediumTextSize,
@@ -82,4 +83,10 @@ class ProductItemCard extends StatelessWidget {
       ),
     );
   }
+}
+
+String formatPrice(double price) {
+  var formatter = NumberFormat.currency(
+      locale: "en_US", symbol: "\$", decimalDigits: 2, customPattern: "###.0#");
+  return formatter.format(price);
 }

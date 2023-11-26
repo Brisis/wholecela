@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:wholecela/core/config/constants.dart';
 import 'package:wholecela/presentation/screens/checkout_screen.dart';
-import 'package:wholecela/presentation/screens/profile_screen.dart';
+import 'package:wholecela/presentation/screens/wholesale_screen.dart';
 import 'package:wholecela/presentation/widgets/cart_card.dart';
+import 'package:wholecela/presentation/widgets/menu_drawer.dart';
 
 class CartScreen extends StatefulWidget {
   static Route route() {
@@ -37,10 +38,11 @@ class _CartScreenState extends State<CartScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: kBackgroundColor,
+      drawer: const MenuDrawer(),
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: const Text(
-          "My Cart",
+          "Cart - Metropeach Brownee",
           style: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.bold,
@@ -51,12 +53,12 @@ class _CartScreenState extends State<CartScreen> {
             onPressed: () {
               Navigator.push(
                 context,
-                ProfileScreen.route(),
+                WholesaleScreen.route(),
               );
             },
             icon: const CircleAvatar(
               backgroundImage: AssetImage(
-                "assets/images/user.jpg",
+                "assets/images/metro.jpg",
               ),
             ),
           ),
@@ -79,7 +81,7 @@ class _CartScreenState extends State<CartScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const Text(
-                  "Total Items : 23",
+                  "Total Items : 3",
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w500,
@@ -87,7 +89,7 @@ class _CartScreenState extends State<CartScreen> {
                 ),
                 verticalSpace(height: 15),
                 const Text(
-                  "\$630.00",
+                  "\$150.00",
                   style: TextStyle(
                     fontSize: 28,
                     fontWeight: FontWeight.bold,

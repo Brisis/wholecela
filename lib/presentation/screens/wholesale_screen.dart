@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:wholecela/presentation/screens/cart_screen.dart';
 import 'package:wholecela/core/config/constants.dart';
 import 'package:wholecela/data/models/product.dart';
+import 'package:wholecela/presentation/widgets/menu_drawer.dart';
 import 'package:wholecela/presentation/widgets/product_item_card.dart';
 
 class WholesaleScreen extends StatefulWidget {
@@ -38,6 +39,7 @@ class _WholesaleScreenState extends State<WholesaleScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: kBackgroundColor,
+      drawer: const MenuDrawer(),
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: const Text(
@@ -181,7 +183,7 @@ List<Product> products = [
   Product(
     name: "Product name",
     images: [],
-    price: 30,
+    price: 29.9,
   ),
   Product(
     name: "Product name",
