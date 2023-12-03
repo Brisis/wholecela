@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:wholecela/business_logic/color_bloc/color_bloc.dart';
+import 'package:wholecela/core/extensions/to_hex_color.dart';
+import 'package:wholecela/data/models/color.dart';
 import 'package:wholecela/presentation/screens/cart_screen.dart';
 import 'package:wholecela/core/config/constants.dart';
 import 'package:wholecela/data/models/product.dart';
@@ -18,19 +22,6 @@ class ProductScreen extends StatefulWidget {
 }
 
 class _ProductScreenState extends State<ProductScreen> {
-  // Initial Selected Value
-  String dropdownvalue = 'Any';
-
-  // List of items in our dropdown menu
-  var items = [
-    'Any',
-    'Green',
-    'Blue',
-    'Yellow',
-    'Black',
-    'Red',
-  ];
-
   Product product = Product(
     name: "Product name",
     imageUrl: "assets/images/fridge.jpg",
@@ -38,7 +29,6 @@ class _ProductScreenState extends State<ProductScreen> {
     price: 30,
   );
 
-  TextEditingController controller = TextEditingController();
   int cartValue = 1;
 
   void _incrementValue() {
@@ -55,6 +45,16 @@ class _ProductScreenState extends State<ProductScreen> {
         cartValue--;
       });
     }
+  }
+
+  late ColorModel selectedColor;
+  late List<ColorModel> colors;
+
+  @override
+  void initState() {
+    super.initState();
+    colors = context.read<ColorBloc>().state.colors!;
+    selectedColor = colors.firstWhere((color) => color.name == "Any");
   }
 
   @override
@@ -133,39 +133,66 @@ class _ProductScreenState extends State<ProductScreen> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    const Text(
-                      "Product Color: ",
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                    DropdownButton(
-                      underline: const SizedBox.shrink(),
-                      focusColor: Colors.white,
-                      borderRadius: BorderRadius.circular(10),
-                      value: dropdownvalue,
-                      icon: const Icon(Icons.keyboard_arrow_down),
-                      items: items.map((String items) {
-                        return DropdownMenuItem(
-                          value: items,
-                          child: Padding(
-                            padding:
-                                const EdgeInsets.symmetric(horizontal: 5.0),
-                            child: Text(
-                              items,
-                              style: const TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        const Text(
+                          "Product Color: ",
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
                           ),
-                        );
-                      }).toList(),
-                      onChanged: (String? newValue) {
-                        setState(() {
-                          dropdownvalue = newValue!;
-                        });
+                        ),
+                        horizontalSpace(),
+                        selectedColor.name == "Any"
+                            ? const Text(
+                                "Any Color",
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.normal,
+                                ),
+                              )
+                            : CircleAvatar(
+                                backgroundColor:
+                                    HexColor.fromHex(selectedColor.hexCode),
+                                radius: 8,
+                              ),
+                      ],
+                    ),
+                    BlocBuilder<ColorBloc, ColorState>(
+                      builder: (context, state) {
+                        if (state is LoadedColors) {
+                          return DropdownButton(
+                            underline: const SizedBox.shrink(),
+                            focusColor: Colors.white,
+                            borderRadius: BorderRadius.circular(10),
+                            value: selectedColor,
+                            icon: const Icon(Icons.keyboard_arrow_down),
+                            items: colors.map((ColorModel color) {
+                              return DropdownMenuItem(
+                                value: color,
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 5.0),
+                                  child: Text(
+                                    color.name,
+                                    style: const TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                ),
+                              );
+                            }).toList(),
+                            onChanged: (ColorModel? newValue) {
+                              setState(() {
+                                selectedColor = newValue!;
+                              });
+                            },
+                          );
+                        }
+
+                        return const Text("No Colors");
                       },
                     ),
                   ],

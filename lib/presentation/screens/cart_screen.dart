@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:wholecela/business_logic/location_bloc/location_bloc.dart';
+import 'package:wholecela/business_logic/user_bloc/user_bloc.dart';
 import 'package:wholecela/core/config/constants.dart';
+import 'package:wholecela/data/models/location.dart';
+import 'package:wholecela/data/models/user.dart';
 import 'package:wholecela/presentation/screens/checkout_screen.dart';
 import 'package:wholecela/presentation/screens/wholesale_screen.dart';
 import 'package:wholecela/presentation/widgets/cart_card.dart';
@@ -19,26 +24,33 @@ class CartScreen extends StatefulWidget {
 }
 
 class _CartScreenState extends State<CartScreen> {
-  // Initial Selected Value
-  String dropdownvalue = 'City Central';
+  late User loggedUser;
 
-  // List of items in our dropdown menu
-  var items = [
-    'City Central',
-    'Damofalls',
-    'Chitungwiza',
-    'Hatfield',
-    'Warren Park',
-    'Avondale',
-  ];
+  late Location selectedLocation;
+  late List<Location> locations;
 
-  TextEditingController controller = TextEditingController();
+  @override
+  void initState() {
+    super.initState();
+    loggedUser = context.read<UserBloc>().state.user!;
+    locations = context.read<LocationBloc>().state.locations!;
+    selectedLocation = locations.first;
+  }
 
   @override
   Widget build(BuildContext context) {
+    if (loggedUser.locationId != null) {
+      setState(() {
+        selectedLocation = locations
+            .firstWhere((location) => location.id == loggedUser.locationId);
+      });
+    }
+
     return Scaffold(
       backgroundColor: kBackgroundColor,
-      drawer: const MenuDrawer(),
+      drawer: MenuDrawer(
+        user: loggedUser,
+      ),
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: const Text(
@@ -89,7 +101,7 @@ class _CartScreenState extends State<CartScreen> {
                 ),
                 verticalSpace(height: 15),
                 const Text(
-                  "\$150.00",
+                  "\.00",
                   style: TextStyle(
                     fontSize: 28,
                     fontWeight: FontWeight.bold,
@@ -107,33 +119,40 @@ class _CartScreenState extends State<CartScreen> {
                         fontWeight: FontWeight.w500,
                       ),
                     ),
-                    DropdownButton(
-                      underline: const SizedBox.shrink(),
-                      focusColor: Colors.white,
-                      borderRadius: BorderRadius.circular(10),
-                      value: dropdownvalue,
-                      icon: const Icon(Icons.keyboard_arrow_down),
-                      items: items.map((String items) {
-                        return DropdownMenuItem(
-                          value: items,
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 5.0,
-                            ),
-                            child: Text(
-                              items,
-                              style: const TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ),
-                        );
-                      }).toList(),
-                      onChanged: (String? newValue) {
-                        setState(() {
-                          dropdownvalue = newValue!;
-                        });
+                    BlocBuilder<LocationBloc, LocationState>(
+                      builder: (context, state) {
+                        if (state is LoadedLocations) {
+                          return DropdownButton(
+                            underline: const SizedBox.shrink(),
+                            focusColor: Colors.white,
+                            borderRadius: BorderRadius.circular(10),
+                            value: selectedLocation,
+                            icon: const Icon(Icons.keyboard_arrow_down),
+                            items: locations.map((Location location) {
+                              return DropdownMenuItem(
+                                value: location,
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 5.0),
+                                  child: Text(
+                                    location.name,
+                                    style: const TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                ),
+                              );
+                            }).toList(),
+                            onChanged: (Location? newValue) {
+                              setState(() {
+                                selectedLocation = newValue!;
+                              });
+                            },
+                          );
+                        }
+
+                        return const Text("No locations");
                       },
                     ),
                   ],

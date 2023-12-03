@@ -1,24 +1,83 @@
 import 'package:flutter/material.dart';
-import 'package:wholecela/presentation/screens/welcome_screen.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:wholecela/business_logic/auth_bloc/authentication_bloc.dart';
+import 'package:wholecela/business_logic/user_bloc/user_bloc.dart';
+import 'package:wholecela/presentation/app/app_blocs.dart';
+import 'package:wholecela/presentation/app/app_repositories.dart';
+import 'package:wholecela/presentation/app/welcome_screen.dart';
+import 'package:wholecela/presentation/screens/auth/login_screen.dart';
+import 'package:wholecela/presentation/screens/home_screen.dart';
+import 'package:wholecela/presentation/utils/loaders/app_loader_screen.dart';
 
-void main() {
-  runApp(const MyApp());
+Future<void> main() async {
+  var config = const AppRepositories(
+    appBlocs: AppBlocs(
+      child: MainApp(),
+    ),
+  );
+
+  runApp(config);
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class MainApp extends StatefulWidget {
+  const MainApp({super.key});
 
-  // This widget is the root of your application.
+  @override
+  State<MainApp> createState() => _MainAppState();
+}
+
+class _MainAppState extends State<MainApp> {
+  final GlobalKey<NavigatorState> _navigatorKey = GlobalKey<NavigatorState>();
+  NavigatorState? get _navigator => _navigatorKey.currentState;
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
+      navigatorKey: _navigatorKey,
       title: 'Wholecela',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const WelcomeScreen(),
+      builder: (context, child) {
+        return BlocListener<AuthenticationBloc, AuthenticationState>(
+          listener: (context, state) {
+            if (state is AuthenticationStateIsInSplashPage) {
+              _navigator!.pushAndRemoveUntil(
+                AppLoaderScreen.route(),
+                (route) => false,
+              );
+            }
+
+            if (state is AuthenticationStateUserLoggedIn) {
+              BlocProvider.of<UserBloc>(context).add(
+                LoadUser(user: state.user),
+              );
+
+              _navigator!.pushAndRemoveUntil(
+                HomeScreen.route(),
+                (route) => false,
+              );
+            }
+
+            if (state is AuthenticationStateUserLoggedOut) {
+              _navigator!.pushAndRemoveUntil(
+                LoginScreen.route(),
+                (route) => false,
+              );
+            }
+
+            if (state is AuthenticationStateUserNotLoggedIn) {
+              _navigator!.pushAndRemoveUntil(
+                WelcomeScreen.route(),
+                (route) => false,
+              );
+            }
+          },
+          child: child,
+        );
+      },
+      onGenerateRoute: (_) => AppLoaderScreen.route(),
     );
   }
 }

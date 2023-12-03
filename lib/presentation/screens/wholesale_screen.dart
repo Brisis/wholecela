@@ -1,5 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:wholecela/business_logic/category_bloc/category_bloc.dart';
+import 'package:wholecela/business_logic/user_bloc/user_bloc.dart';
+import 'package:wholecela/data/models/category.dart';
+import 'package:wholecela/data/models/user.dart';
 import 'package:wholecela/presentation/screens/cart_screen.dart';
 import 'package:wholecela/core/config/constants.dart';
 import 'package:wholecela/data/models/product.dart';
@@ -20,26 +25,29 @@ class WholesaleScreen extends StatefulWidget {
 }
 
 class _WholesaleScreenState extends State<WholesaleScreen> {
-  // Initial Selected Value
-  String dropdownvalue = 'All';
+  late User loggedUser;
 
-  // List of items in our dropdown menu
-  var items = [
-    'All',
-    'Groceries',
-    'Hardware',
-    'Toys',
-    'Electronics',
-    'Babyware',
-  ];
+  late Category selectedCategory;
+  late List<Category> categories;
 
-  TextEditingController controller = TextEditingController();
+  @override
+  void initState() {
+    super.initState();
+    loggedUser = context.read<UserBloc>().state.user!;
+    categories = context.read<CategoryBloc>().state.categories!;
+    selectedCategory =
+        categories.firstWhere((category) => category.name == "All");
+  }
+
+  TextEditingController searchController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: kBackgroundColor,
-      drawer: const MenuDrawer(),
+      drawer: MenuDrawer(
+        user: loggedUser,
+      ),
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: const Text(
@@ -88,43 +96,52 @@ class _WholesaleScreenState extends State<WholesaleScreen> {
                     style: const TextStyle(
                       fontSize: 14,
                     ),
-                    controller: controller,
+                    controller: searchController,
                     onChanged: (value) {},
                     onSubmitted: (value) {},
                     autocorrect: true,
                   ),
                 ),
-                DropdownButton(
-                  underline: const SizedBox.shrink(),
-                  focusColor: Colors.white,
-                  borderRadius: BorderRadius.circular(10),
-                  value: dropdownvalue,
-                  icon: const Icon(Icons.keyboard_arrow_down),
-                  items: items.map((String items) {
-                    return DropdownMenuItem(
-                      value: items,
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 5.0),
-                        child: Text(
-                          items,
-                          style: const TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ),
-                    );
-                  }).toList(),
-                  onChanged: (String? newValue) {
-                    setState(() {
-                      dropdownvalue = newValue!;
-                    });
+                BlocBuilder<CategoryBloc, CategoryState>(
+                  builder: (context, state) {
+                    if (state is LoadedCategories) {
+                      return DropdownButton(
+                        underline: const SizedBox.shrink(),
+                        focusColor: Colors.white,
+                        borderRadius: BorderRadius.circular(10),
+                        value: selectedCategory,
+                        icon: const Icon(Icons.keyboard_arrow_down),
+                        items: categories.map((Category category) {
+                          return DropdownMenuItem(
+                            value: category,
+                            child: Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 5.0),
+                              child: Text(
+                                category.name,
+                                style: const TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ),
+                          );
+                        }).toList(),
+                        onChanged: (Category? newValue) {
+                          setState(() {
+                            selectedCategory = newValue!;
+                          });
+                        },
+                      );
+                    }
+
+                    return const Text("No Categories");
                   },
                 ),
               ],
             ),
             verticalSpace(
-              height: 30,
+              height: 15,
             ),
             Expanded(
               child: GridView.count(

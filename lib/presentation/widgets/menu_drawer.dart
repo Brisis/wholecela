@@ -1,15 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:wholecela/core/config/constants.dart';
+import 'package:wholecela/data/models/user.dart';
 import 'package:wholecela/presentation/screens/app_screens/contact_page.dart';
 import 'package:wholecela/presentation/screens/app_screens/tcs_page.dart';
 import 'package:wholecela/presentation/screens/auth/login_screen.dart';
 import 'package:wholecela/presentation/screens/cart_combined_screen.dart';
 import 'package:wholecela/presentation/screens/home_screen.dart';
-import 'package:wholecela/presentation/screens/order_history.dart';
+import 'package:wholecela/presentation/screens/order_history_screen.dart';
 import 'package:wholecela/presentation/screens/profile_screen.dart';
 
 class MenuDrawer extends StatelessWidget {
-  const MenuDrawer({super.key});
+  final User user;
+  const MenuDrawer({
+    super.key,
+    required this.user,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -35,20 +40,20 @@ class MenuDrawer extends StatelessWidget {
                     ),
                   ),
                   horizontalSpace(),
-                  const Column(
+                  Column(
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        "Benevolent Mudzinganyama",
-                        style: TextStyle(
+                        user.name,
+                        style: const TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w500,
                         ),
                       ),
                       Text(
-                        "benbeemudy@gmail.com",
-                        style: TextStyle(
+                        user.email,
+                        style: const TextStyle(
                           fontSize: 12,
                           color: kBlackFaded,
                         ),

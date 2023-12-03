@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 // const kPrimaryColor = Color(0xFFD61EDA);
-const kPrimaryColor = Color(0xFF573BE9);
+const kPrimaryColor = Colors.deepPurple;
 const kSecondaryColor = Color(0xFF0C0B0E);
 const kBackgroundColor = Color(0xFFF1F2F6);
 const kBackgroundColorFaded = Color.fromARGB(255, 221, 222, 227);
@@ -37,8 +37,9 @@ SizedBox horizontalSpace({double width = 8.0}) {
 }
 
 abstract class AppUrls {
-  static String SERVER_URL = "https://www.micasalistings.com";
-  // static String SERVER_URL = "http://192.168.254.61:3000";
+  //static String SERVER_URL = "https://www.micasalistings.com";
+  //static String SERVER_URL = "http://192.168.254.61:3000";
+  static String SERVER_URL = "http://localhost:3000";
 }
 
 const Color primaryColor = Color(0xFF2967FF);

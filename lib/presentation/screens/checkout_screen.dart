@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:wholecela/core/config/constants.dart';
 import 'package:wholecela/presentation/screens/home_screen.dart';
-import 'package:wholecela/presentation/screens/profile_screen.dart';
+import 'package:wholecela/presentation/screens/order_history_screen.dart';
 
 class CheckoutScreen extends StatelessWidget {
   static Route route() {
@@ -43,7 +43,7 @@ class CheckoutScreen extends StatelessWidget {
                     onPressed: () {
                       Navigator.pushAndRemoveUntil(
                         context,
-                        ProfileScreen.route(),
+                        OrderHistoryScreen.route(),
                         ((Route<dynamic> route) => false),
                       );
                     },

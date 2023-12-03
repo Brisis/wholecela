@@ -68,7 +68,7 @@ class ProductItemCard extends StatelessWidget {
                   ),
                   verticalSpace(),
                   Text(
-                    formatPrice(product.price),
+                    "\$${formatPrice(product.price)}",
                     style: const TextStyle(
                       color: kBlackColor,
                       fontSize: kMediumTextSize,
@@ -87,6 +87,6 @@ class ProductItemCard extends StatelessWidget {
 
 String formatPrice(double price) {
   var formatter = NumberFormat.currency(
-      locale: "en_US", symbol: "\$", decimalDigits: 2, customPattern: "###.0#");
+      locale: "en_US", decimalDigits: 2, customPattern: "###.0#");
   return formatter.format(price);
 }
