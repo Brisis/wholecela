@@ -4,20 +4,25 @@ import 'package:wholecela/business_logic/location_bloc/location_bloc.dart';
 import 'package:wholecela/business_logic/user_bloc/user_bloc.dart';
 import 'package:wholecela/core/config/constants.dart';
 import 'package:wholecela/data/models/location.dart';
+import 'package:wholecela/data/models/seller.dart';
 import 'package:wholecela/data/models/user.dart';
 import 'package:wholecela/presentation/screens/checkout_screen.dart';
 import 'package:wholecela/presentation/screens/wholesale_screen.dart';
+import 'package:wholecela/presentation/widgets/avatar_image.dart';
 import 'package:wholecela/presentation/widgets/cart_card.dart';
-import 'package:wholecela/presentation/widgets/menu_drawer.dart';
 
 class CartScreen extends StatefulWidget {
-  static Route route() {
+  final Seller seller;
+  static Route route({required Seller seller}) {
     return MaterialPageRoute(
-      builder: (context) => const CartScreen(),
+      builder: (context) => CartScreen(seller: seller),
     );
   }
 
-  const CartScreen({super.key});
+  const CartScreen({
+    super.key,
+    required this.seller,
+  });
 
   @override
   State<CartScreen> createState() => _CartScreenState();
@@ -48,9 +53,6 @@ class _CartScreenState extends State<CartScreen> {
 
     return Scaffold(
       backgroundColor: kBackgroundColor,
-      drawer: MenuDrawer(
-        user: loggedUser,
-      ),
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: const Text(
@@ -65,13 +67,12 @@ class _CartScreenState extends State<CartScreen> {
             onPressed: () {
               Navigator.push(
                 context,
-                WholesaleScreen.route(),
+                WholesaleScreen.route(seller: widget.seller),
               );
             },
-            icon: const CircleAvatar(
-              backgroundImage: AssetImage(
-                "assets/images/metro.jpg",
-              ),
+            icon: AvatarImage(
+              imageUrl: widget.seller.imageUrl,
+              isSeller: true,
             ),
           ),
         ],
@@ -84,7 +85,18 @@ class _CartScreenState extends State<CartScreen> {
               shrinkWrap: true,
               itemCount: 3,
               itemBuilder: (context, index) {
-                return const CartCard();
+                return GestureDetector(
+                  onTap: () {
+                    // Navigator.push(
+                    //   context,
+                    //   ProductScreen.route(
+                    //     seller: widget.seller,
+                    //     productId: productId,
+                    //   ),
+                    // );
+                  },
+                  child: const CartCard(),
+                );
               },
             ),
             verticalSpace(height: 15),
@@ -101,7 +113,7 @@ class _CartScreenState extends State<CartScreen> {
                 ),
                 verticalSpace(height: 15),
                 const Text(
-                  "\.00",
+                  "\$48.00",
                   style: TextStyle(
                     fontSize: 28,
                     fontWeight: FontWeight.bold,

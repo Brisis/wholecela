@@ -1,9 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:wholecela/core/config/constants.dart';
+import 'package:wholecela/data/models/product.dart';
+import 'package:wholecela/data/models/seller.dart';
 import 'package:wholecela/presentation/screens/wholesale_screen.dart';
 
 class WholeSaleCard extends StatelessWidget {
-  const WholeSaleCard({super.key});
+  final Seller seller;
+  const WholeSaleCard({
+    super.key,
+    required this.seller,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -13,7 +19,7 @@ class WholeSaleCard extends StatelessWidget {
         onTap: () {
           Navigator.push(
             context,
-            WholesaleScreen.route(),
+            WholesaleScreen.route(seller: seller),
           );
         },
         child: Container(
@@ -36,11 +42,17 @@ class WholeSaleCard extends StatelessWidget {
                     width: 50,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(5),
-                      image: const DecorationImage(
-                        image: AssetImage(
-                          "assets/images/metro.jpg",
-                        ),
-                      ),
+                      image: seller.imageUrl != null
+                          ? DecorationImage(
+                              //image: AssetImage(product.imageUrl!),
+                              image: NetworkImage(
+                                  "${AppUrls.SERVER_URL}/uploads/thumbnails/${seller.imageUrl}"),
+                              fit: BoxFit.cover,
+                            )
+                          : const DecorationImage(
+                              image: AssetImage("assets/images/shop.png"),
+                              fit: BoxFit.cover,
+                            ),
                     ),
                   ),
                   horizontalSpace(
@@ -50,9 +62,9 @@ class WholeSaleCard extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
-                        "Metropeach Brownee",
-                        style: TextStyle(
+                      Text(
+                        seller.name,
+                        style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
                         ),
@@ -64,9 +76,9 @@ class WholeSaleCard extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.start,
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          const Text(
-                            "200 Products",
-                            style: TextStyle(
+                          Text(
+                            "${seller.products.length} Products",
+                            style: const TextStyle(
                               fontSize: 12,
                             ),
                           ),
@@ -80,9 +92,9 @@ class WholeSaleCard extends StatelessWidget {
                           horizontalSpace(
                             width: 8,
                           ),
-                          const Text(
-                            "12 Categories",
-                            style: TextStyle(
+                          Text(
+                            "${getProductsCategories(seller.products)} Categories",
+                            style: const TextStyle(
                               fontSize: 12,
                             ),
                           ),
@@ -99,4 +111,12 @@ class WholeSaleCard extends StatelessWidget {
       ),
     );
   }
+}
+
+int getProductsCategories(List<Product> products) {
+  var categories = [];
+  for (var product in products) {
+    categories.add(product.categoryId);
+  }
+  return categories.toSet().toList().length;
 }

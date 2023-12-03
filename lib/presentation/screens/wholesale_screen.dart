@@ -4,21 +4,30 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:wholecela/business_logic/category_bloc/category_bloc.dart';
 import 'package:wholecela/business_logic/user_bloc/user_bloc.dart';
 import 'package:wholecela/data/models/category.dart';
+import 'package:wholecela/data/models/seller.dart';
 import 'package:wholecela/data/models/user.dart';
 import 'package:wholecela/presentation/screens/cart_screen.dart';
 import 'package:wholecela/core/config/constants.dart';
 import 'package:wholecela/data/models/product.dart';
+import 'package:wholecela/presentation/screens/product_screen.dart';
+import 'package:wholecela/presentation/widgets/avatar_image.dart';
 import 'package:wholecela/presentation/widgets/menu_drawer.dart';
 import 'package:wholecela/presentation/widgets/product_item_card.dart';
 
 class WholesaleScreen extends StatefulWidget {
-  static Route route() {
+  final Seller seller;
+  static Route route({required Seller seller}) {
     return MaterialPageRoute(
-      builder: (context) => const WholesaleScreen(),
+      builder: (context) => WholesaleScreen(
+        seller: seller,
+      ),
     );
   }
 
-  const WholesaleScreen({super.key});
+  const WholesaleScreen({
+    super.key,
+    required this.seller,
+  });
 
   @override
   State<WholesaleScreen> createState() => _WholesaleScreenState();
@@ -43,6 +52,7 @@ class _WholesaleScreenState extends State<WholesaleScreen> {
 
   @override
   Widget build(BuildContext context) {
+    List<Product> products = widget.seller.products;
     return Scaffold(
       backgroundColor: kBackgroundColor,
       drawer: MenuDrawer(
@@ -50,9 +60,9 @@ class _WholesaleScreenState extends State<WholesaleScreen> {
       ),
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: const Text(
-          "Metropeach Brownee",
-          style: TextStyle(
+        title: Text(
+          widget.seller.name,
+          style: const TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.bold,
           ),
@@ -60,10 +70,9 @@ class _WholesaleScreenState extends State<WholesaleScreen> {
         actions: [
           IconButton(
             onPressed: () {},
-            icon: const CircleAvatar(
-              backgroundImage: AssetImage(
-                "assets/images/metro.jpg",
-              ),
+            icon: AvatarImage(
+              imageUrl: widget.seller.imageUrl,
+              isSeller: true,
             ),
           ),
         ],
@@ -74,9 +83,9 @@ class _WholesaleScreenState extends State<WholesaleScreen> {
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              "Shop Items - 200",
-              style: TextStyle(
+            Text(
+              "Shop Items - ${products.length}",
+              style: const TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
               ),
@@ -153,8 +162,19 @@ class _WholesaleScreenState extends State<WholesaleScreen> {
                 physics: const NeverScrollableScrollPhysics(),
                 children: List.generate(
                   products.length,
-                  (index) => ProductItemCard(
-                    product: products[index],
+                  (index) => GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        ProductScreen.route(
+                          seller: widget.seller,
+                          productId: products[index].id,
+                        ),
+                      );
+                    },
+                    child: ProductItemCard(
+                      product: products[index],
+                    ),
                   ),
                 ),
               ),
@@ -167,7 +187,7 @@ class _WholesaleScreenState extends State<WholesaleScreen> {
         onPressed: () {
           Navigator.push(
             context,
-            CartScreen.route(),
+            CartScreen.route(seller: widget.seller),
           );
         },
         tooltip: 'My Cart',
@@ -190,22 +210,44 @@ class _WholesaleScreenState extends State<WholesaleScreen> {
   }
 }
 
-List<Product> products = [
-  Product(
-    name: "Product name",
-    imageUrl: "assets/images/fridge.jpg",
-    images: [],
-    price: 30,
-  ),
-  Product(
-    name: "Product name",
-    images: [],
-    price: 29.9,
-  ),
-  Product(
-    name: "Product name",
-    imageUrl: "assets/images/fridge.jpg",
-    images: [],
-    price: 30,
-  ),
-];
+// List<Product> products = const [
+//   Product(
+//     id: "1bd8b296-3a41-471d-9fa3-0ab6ab692f0d",
+//     title: "Table Chair",
+//     imageUrl: "assets/images/fridge.jpg",
+//     description: null,
+//     quantity: 5,
+//     price: 5,
+//     authenticity: true,
+//     returnPolicy: true,
+//     warranty: true,
+//     categoryId: "b9ea294f-2776-441d-8d9f-dc2e1590b76c",
+//     colors: [],
+//   ),
+//   Product(
+//     id: "1bd8b296-3a41-471d-9fa3-0ab6ab692f0d",
+//     title: "Table Chair",
+//     imageUrl: null,
+//     description: null,
+//     quantity: 5,
+//     price: 5,
+//     authenticity: true,
+//     returnPolicy: true,
+//     warranty: true,
+//     categoryId: "b9ea294f-2776-441d-8d9f-dc2e1590b76c",
+//     colors: [],
+//   ),
+//   Product(
+//     id: "1bd8b296-3a41-471d-9fa3-0ab6ab692f0d",
+//     title: "Table Chair",
+//     imageUrl: "assets/images/fridge.jpg",
+//     description: null,
+//     quantity: 5,
+//     price: 5,
+//     authenticity: true,
+//     returnPolicy: true,
+//     warranty: true,
+//     categoryId: "b9ea294f-2776-441d-8d9f-dc2e1590b76c",
+//     colors: [],
+//   ),
+// ];

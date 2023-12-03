@@ -2,12 +2,15 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:wholecela/business_logic/location_bloc/location_bloc.dart';
+import 'package:wholecela/business_logic/seller/seller_bloc.dart';
 import 'package:wholecela/business_logic/user_bloc/user_bloc.dart';
 import 'package:wholecela/data/models/location.dart';
+import 'package:wholecela/data/models/seller.dart';
 import 'package:wholecela/data/models/user.dart';
 import 'package:wholecela/presentation/screens/cart_combined_screen.dart';
 import 'package:wholecela/core/config/constants.dart';
 import 'package:wholecela/presentation/screens/profile_screen.dart';
+import 'package:wholecela/presentation/widgets/avatar_image.dart';
 import 'package:wholecela/presentation/widgets/menu_drawer.dart';
 import 'package:wholecela/presentation/widgets/wholesale_card.dart';
 
@@ -36,6 +39,8 @@ class _HomeScreenState extends State<HomeScreen> {
     loggedUser = context.read<UserBloc>().state.user!;
     locations = context.read<LocationBloc>().state.locations!;
     selectedLocation = locations.first;
+
+    context.read<SellerBloc>().add(LoadSellers());
   }
 
   TextEditingController searchController = TextEditingController();
@@ -62,10 +67,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 ProfileScreen.route(),
               );
             },
-            icon: const CircleAvatar(
-              backgroundImage: AssetImage(
-                "assets/images/user.jpg",
-              ),
+            icon: AvatarImage(
+              imageUrl: loggedUser.imageUrl,
             ),
           ),
         ],
@@ -136,11 +139,26 @@ class _HomeScreenState extends State<HomeScreen> {
               height: 15,
             ),
             Expanded(
-              child: ListView.builder(
-                  itemCount: 15,
-                  itemBuilder: (context, index) {
-                    return const WholeSaleCard();
-                  }),
+              child: BlocBuilder<SellerBloc, SellerState>(
+                builder: (context, state) {
+                  if (state is LoadedSellers) {
+                    List<Seller> sellers = state.sellers;
+                    return ListView.builder(
+                        itemCount: sellers.length,
+                        itemBuilder: (context, index) {
+                          return WholeSaleCard(
+                            seller: sellers[index],
+                          );
+                        });
+                  }
+
+                  return const Center(
+                    child: CircularProgressIndicator(
+                      color: kPrimaryColor,
+                    ),
+                  );
+                },
+              ),
             ),
           ],
         ),

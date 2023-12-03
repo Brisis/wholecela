@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:wholecela/business_logic/seller/seller_bloc.dart';
 import 'package:wholecela/business_logic/user_bloc/user_bloc.dart';
 import 'package:wholecela/core/config/constants.dart';
+import 'package:wholecela/data/models/seller.dart';
+import 'package:wholecela/data/models/user.dart';
+import 'package:wholecela/presentation/screens/cart_screen.dart';
 import 'package:wholecela/presentation/screens/profile_screen.dart';
+import 'package:wholecela/presentation/widgets/avatar_image.dart';
 import 'package:wholecela/presentation/widgets/cart_combined_card.dart';
 import 'package:wholecela/presentation/widgets/menu_drawer.dart';
 
@@ -20,106 +25,102 @@ class CartCombinedScreen extends StatefulWidget {
 }
 
 class _CartCombinedScreenState extends State<CartCombinedScreen> {
-  // Initial Selected Value
-  String dropdownvalue = 'City Central';
+  late User loggedUser;
+  late List<Seller> sellers;
 
-  // List of items in our dropdown menu
-  var items = [
-    'City Central',
-    'Damofalls',
-    'Chitungwiza',
-    'Hatfield',
-    'Warren Park',
-    'Avondale',
-  ];
-
-  TextEditingController controller = TextEditingController();
+  @override
+  void initState() {
+    super.initState();
+    loggedUser = context.read<UserBloc>().state.user!;
+    sellers = context.read<SellerBloc>().state.sellers!;
+  }
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<UserBloc, UserState>(
-      builder: (context, state) {
-        if (state is LoadedUser) {
-          return Scaffold(
-            backgroundColor: kBackgroundColor,
-            drawer: MenuDrawer(
-              user: state.user,
+    return Scaffold(
+      backgroundColor: kBackgroundColor,
+      drawer: MenuDrawer(
+        user: loggedUser,
+      ),
+      appBar: AppBar(
+        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        title: const Text(
+          "My Cart",
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        actions: [
+          IconButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                ProfileScreen.route(),
+              );
+            },
+            icon: AvatarImage(
+              imageUrl: loggedUser.imageUrl,
             ),
-            appBar: AppBar(
-              backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-              title: const Text(
-                "My Cart",
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              actions: [
-                IconButton(
-                  onPressed: () {
+          ),
+        ],
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(15.0),
+        child: ListView(
+          children: [
+            ListView.builder(
+              shrinkWrap: true,
+              itemCount: 3,
+              itemBuilder: (context, index) {
+                return GestureDetector(
+                  onTap: () {
                     Navigator.push(
                       context,
-                      ProfileScreen.route(),
+                      CartScreen.route(seller: sellers[0]),
                     );
                   },
-                  icon: const CircleAvatar(
-                    backgroundImage: AssetImage(
-                      "assets/images/user.jpg",
-                    ),
+                  child: CartCombinedCard(
+                    seller: sellers[0],
+                  ),
+                );
+              },
+            ),
+            verticalSpace(height: 15),
+            Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  "Total Items : 23",
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                verticalSpace(height: 15),
+                const Text(
+                  "\$543.00",
+                  style: TextStyle(
+                    fontSize: 28,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
               ],
             ),
-            body: Padding(
-              padding: const EdgeInsets.all(15.0),
-              child: ListView(
-                children: [
-                  ListView.builder(
-                    shrinkWrap: true,
-                    itemCount: 3,
-                    itemBuilder: (context, index) {
-                      return const CartCombinedCard();
-                    },
-                  ),
-                  verticalSpace(height: 15),
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        "Total Items : 23",
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                      verticalSpace(height: 15),
-                      const Text(
-                        "\.00",
-                        style: TextStyle(
-                          fontSize: 28,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-            floatingActionButton: FloatingActionButton(
-              shape: const CircleBorder(),
-              onPressed: () {},
-              tooltip: 'Empty Cart',
-              child: const Icon(
-                Icons.delete,
-                color: kWarningColor,
-                size: kIconLargeSize,
-              ),
-            ),
-          );
-        }
-        return const Placeholder();
-      },
+          ],
+        ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        shape: const CircleBorder(),
+        onPressed: () {},
+        tooltip: 'Empty Cart',
+        child: const Icon(
+          Icons.delete,
+          color: kWarningColor,
+          size: kIconLargeSize,
+        ),
+      ),
     );
   }
 }

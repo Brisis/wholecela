@@ -8,6 +8,7 @@ import 'package:wholecela/presentation/screens/cart_combined_screen.dart';
 import 'package:wholecela/presentation/screens/home_screen.dart';
 import 'package:wholecela/presentation/screens/order_history_screen.dart';
 import 'package:wholecela/presentation/screens/profile_screen.dart';
+import 'package:wholecela/presentation/widgets/avatar_image.dart';
 
 class MenuDrawer extends StatelessWidget {
   final User user;
@@ -34,10 +35,8 @@ class MenuDrawer extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  const CircleAvatar(
-                    backgroundImage: AssetImage(
-                      "assets/images/user.jpg",
-                    ),
+                  AvatarImage(
+                    imageUrl: user.imageUrl,
                   ),
                   horizontalSpace(),
                   Column(
