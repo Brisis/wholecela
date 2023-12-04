@@ -1,4 +1,3 @@
-
 import 'package:wholecela/data/models/seller.dart';
 import 'package:wholecela/data/repositories/seller/seller_provider.dart';
 
@@ -14,5 +13,11 @@ class SellerRepository {
           (i) => Seller.fromJson(i),
         )
         .toList();
+  }
+
+  Future<Seller> getSeller({required String id}) async {
+    final response = await sellerProvider.getSeller(id: id);
+
+    return Seller.fromJson(response);
   }
 }

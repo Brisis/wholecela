@@ -96,221 +96,227 @@ class _ProductScreenState extends State<ProductScreen> {
           ),
         ],
       ),
-      body: BlocConsumer<ProductBloc, ProductState>(
-        listener: (context, state) {
-          if (state is LoadedProduct) {
-            setState(() {
-              productColors = state.product.colors;
-            });
-          }
+      body: RefreshIndicator(
+        onRefresh: () async {
+          context.read<ProductBloc>().add(LoadProduct(id: widget.productId));
         },
-        builder: (context, state) {
-          if (state is LoadedProduct) {
-            Product product = state.product;
+        color: kPrimaryColor,
+        child: BlocConsumer<ProductBloc, ProductState>(
+          listener: (context, state) {
+            if (state is LoadedProduct) {
+              setState(() {
+                productColors = state.product.colors;
+              });
+            }
+          },
+          builder: (context, state) {
+            if (state is LoadedProduct) {
+              Product product = state.product;
 
-            return ListView(
-              children: [
-                Container(
-                  height: 350,
-                  decoration: BoxDecoration(
-                    color: kWhiteColor,
-                    image: product.imageUrl != null
-                        ? DecorationImage(
-                            image: NetworkImage(
-                                "${AppUrls.SERVER_URL}/uploads/thumbnails/${product.imageUrl}"),
-                            fit: BoxFit.cover,
-                          )
-                        : const DecorationImage(
-                            image: AssetImage("assets/images/product.jpg"),
-                            fit: BoxFit.cover,
-                          ),
-                  ),
-                ),
-                verticalSpace(height: 15),
-                Padding(
-                  padding: const EdgeInsets.all(15.0),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        product.title,
-                        style: const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                      product.description != null
-                          ? Padding(
-                              padding: const EdgeInsets.only(top: 15.0),
-                              child: Text(
-                                product.description!,
-                                style: const TextStyle(
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.normal,
-                                ),
-                              ),
+              return ListView(
+                children: [
+                  Container(
+                    height: 350,
+                    decoration: BoxDecoration(
+                      color: kWhiteColor,
+                      image: product.imageUrl != null
+                          ? DecorationImage(
+                              image: NetworkImage(
+                                  "${AppUrls.SERVER_URL}/uploads/thumbnails/${product.imageUrl}"),
+                              fit: BoxFit.cover,
                             )
-                          : const SizedBox.shrink(),
-                      verticalSpace(height: 15),
-                      Text(
-                        formatPrice(product.price),
-                        style: const TextStyle(
-                          fontSize: 28,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      verticalSpace(height: 15),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              const Text(
-                                "Product Color: ",
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                              horizontalSpace(),
-                              selectedColor.name == "Any"
-                                  ? const Text(
-                                      "Any Color",
-                                      style: TextStyle(
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.normal,
-                                      ),
-                                    )
-                                  : CircleAvatar(
-                                      backgroundColor: HexColor.fromHex(
-                                          selectedColor.hexCode),
-                                      radius: 8,
-                                    ),
-                            ],
-                          ),
-                          BlocBuilder<ColorBloc, ColorState>(
-                            builder: (context, state) {
-                              if (state is LoadedColors) {
-                                return DropdownButton(
-                                  underline: const SizedBox.shrink(),
-                                  focusColor: Colors.white,
-                                  borderRadius: BorderRadius.circular(10),
-                                  value: selectedColor,
-                                  icon: const Icon(Icons.keyboard_arrow_down),
-                                  items: colors.map((ColorModel color) {
-                                    return DropdownMenuItem(
-                                      value: color,
-                                      child: Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 5.0),
-                                        child: Text(
-                                          color.name,
-                                          style: const TextStyle(
-                                            fontSize: 14,
-                                            fontWeight: FontWeight.w500,
-                                          ),
-                                        ),
-                                      ),
-                                    );
-                                  }).toList(),
-                                  onChanged: (ColorModel? newValue) {
-                                    setState(() {
-                                      selectedColor = newValue!;
-                                    });
-
-                                    if (!productColors
-                                        .contains(selectedColor)) {
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(
-                                        const SnackBar(
-                                          content: Text(
-                                              "Color not available for product"),
-                                        ),
-                                      );
-                                    }
-                                  },
-                                );
-                              }
-
-                              return const Text("No Colors");
-                            },
-                          ),
-                        ],
-                      ),
-                      verticalSpace(
-                        height: 15,
-                      ),
-                      Container(
-                        padding: const EdgeInsets.all(5),
-                        decoration: BoxDecoration(
-                          color: Colors.greenAccent,
-                          borderRadius: BorderRadius.circular(5),
-                        ),
-                        child: const Text(
-                          "12 left in stock",
-                          style: TextStyle(
-                            fontSize: 14,
+                          : const DecorationImage(
+                              image: AssetImage("assets/images/product.jpg"),
+                              fit: BoxFit.cover,
+                            ),
+                    ),
+                  ),
+                  verticalSpace(height: 15),
+                  Padding(
+                    padding: const EdgeInsets.all(15.0),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          product.title,
+                          style: const TextStyle(
+                            fontSize: 18,
                             fontWeight: FontWeight.w500,
                           ),
                         ),
-                      ),
-                      verticalSpace(
-                        height: 15,
-                      ),
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          IconButton(
-                            onPressed: _decrementValue,
-                            icon: const Icon(
-                              Icons.remove,
-                            ),
+                        product.description != null
+                            ? Padding(
+                                padding: const EdgeInsets.only(top: 15.0),
+                                child: Text(
+                                  product.description!,
+                                  style: const TextStyle(
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.normal,
+                                  ),
+                                ),
+                              )
+                            : const SizedBox.shrink(),
+                        verticalSpace(height: 15),
+                        Text(
+                          formatPrice(product.price),
+                          style: const TextStyle(
+                            fontSize: 28,
+                            fontWeight: FontWeight.bold,
                           ),
-                          horizontalSpace(width: 30),
-                          Text(
-                            "$cartValue",
-                            style: const TextStyle(
+                        ),
+                        verticalSpace(height: 15),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                const Text(
+                                  "Product Color: ",
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                                horizontalSpace(),
+                                selectedColor.name == "Any"
+                                    ? const Text(
+                                        "Any Color",
+                                        style: TextStyle(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.normal,
+                                        ),
+                                      )
+                                    : CircleAvatar(
+                                        backgroundColor: HexColor.fromHex(
+                                            selectedColor.hexCode),
+                                        radius: 8,
+                                      ),
+                              ],
+                            ),
+                            BlocBuilder<ColorBloc, ColorState>(
+                              builder: (context, state) {
+                                if (state is LoadedColors) {
+                                  return DropdownButton(
+                                    underline: const SizedBox.shrink(),
+                                    focusColor: Colors.white,
+                                    borderRadius: BorderRadius.circular(10),
+                                    value: selectedColor,
+                                    icon: const Icon(Icons.keyboard_arrow_down),
+                                    items: colors.map((ColorModel color) {
+                                      return DropdownMenuItem(
+                                        value: color,
+                                        child: Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 5.0),
+                                          child: Text(
+                                            color.name,
+                                            style: const TextStyle(
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.w500,
+                                            ),
+                                          ),
+                                        ),
+                                      );
+                                    }).toList(),
+                                    onChanged: (ColorModel? newValue) {
+                                      setState(() {
+                                        selectedColor = newValue!;
+                                      });
+
+                                      if (!productColors
+                                          .contains(selectedColor)) {
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(
+                                          const SnackBar(
+                                            content: Text(
+                                                "Color not available for product"),
+                                          ),
+                                        );
+                                      }
+                                    },
+                                  );
+                                }
+
+                                return const Text("No Colors");
+                              },
+                            ),
+                          ],
+                        ),
+                        verticalSpace(
+                          height: 15,
+                        ),
+                        Container(
+                          padding: const EdgeInsets.all(5),
+                          decoration: BoxDecoration(
+                            color: Colors.greenAccent,
+                            borderRadius: BorderRadius.circular(5),
+                          ),
+                          child: const Text(
+                            "12 left in stock",
+                            style: TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w500,
                             ),
                           ),
-                          horizontalSpace(width: 30),
-                          IconButton(
-                            onPressed: _incrementValue,
-                            icon: const Icon(
-                              Icons.add,
-                            ),
-                          ),
-                        ],
-                      ),
-                      verticalSpace(height: 15),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: ElevatedButton(
-                              onPressed: () {},
-                              child: const Text(
-                                "Add to Cart",
+                        ),
+                        verticalSpace(
+                          height: 15,
+                        ),
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            IconButton(
+                              onPressed: _decrementValue,
+                              icon: const Icon(
+                                Icons.remove,
                               ),
                             ),
-                          ),
-                        ],
-                      ),
-                    ],
+                            horizontalSpace(width: 30),
+                            Text(
+                              "$cartValue",
+                              style: const TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                            horizontalSpace(width: 30),
+                            IconButton(
+                              onPressed: _incrementValue,
+                              icon: const Icon(
+                                Icons.add,
+                              ),
+                            ),
+                          ],
+                        ),
+                        verticalSpace(height: 15),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: ElevatedButton(
+                                onPressed: () {},
+                                child: const Text(
+                                  "Add to Cart",
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-              ],
-            );
-          }
+                ],
+              );
+            }
 
-          return const Center(
-            child: CircularProgressIndicator(),
-          );
-        },
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          },
+        ),
       ),
       floatingActionButton: FloatingActionButton(
         shape: const CircleBorder(),

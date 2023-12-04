@@ -77,138 +77,142 @@ class _CartScreenState extends State<CartScreen> {
           ),
         ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(15.0),
-        child: ListView(
-          children: [
-            ListView.builder(
-              shrinkWrap: true,
-              itemCount: 3,
-              itemBuilder: (context, index) {
-                return GestureDetector(
-                  onTap: () {
-                    // Navigator.push(
-                    //   context,
-                    //   ProductScreen.route(
-                    //     seller: widget.seller,
-                    //     productId: productId,
-                    //   ),
-                    // );
-                  },
-                  child: const CartCard(),
-                );
-              },
-            ),
-            verticalSpace(height: 15),
-            Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  "Total Items : 3",
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500,
+      body: RefreshIndicator(
+        onRefresh: () async {},
+        color: kPrimaryColor,
+        child: Padding(
+          padding: const EdgeInsets.all(15.0),
+          child: ListView(
+            children: [
+              ListView.builder(
+                shrinkWrap: true,
+                itemCount: 3,
+                itemBuilder: (context, index) {
+                  return GestureDetector(
+                    onTap: () {
+                      // Navigator.push(
+                      //   context,
+                      //   ProductScreen.route(
+                      //     seller: widget.seller,
+                      //     productId: productId,
+                      //   ),
+                      // );
+                    },
+                    child: const CartCard(),
+                  );
+                },
+              ),
+              verticalSpace(height: 15),
+              Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    "Total Items : 3",
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                    ),
                   ),
-                ),
-                verticalSpace(height: 15),
-                const Text(
-                  "\$48.00",
-                  style: TextStyle(
-                    fontSize: 28,
-                    fontWeight: FontWeight.bold,
+                  verticalSpace(height: 15),
+                  const Text(
+                    "\$48.00",
+                    style: TextStyle(
+                      fontSize: 28,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
-                ),
-                verticalSpace(height: 15),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    const Text(
-                      "Drop Location: ",
+                  verticalSpace(height: 15),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      const Text(
+                        "Drop Location: ",
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      BlocBuilder<LocationBloc, LocationState>(
+                        builder: (context, state) {
+                          if (state is LoadedLocations) {
+                            return DropdownButton(
+                              underline: const SizedBox.shrink(),
+                              focusColor: Colors.white,
+                              borderRadius: BorderRadius.circular(10),
+                              value: selectedLocation,
+                              icon: const Icon(Icons.keyboard_arrow_down),
+                              items: locations.map((Location location) {
+                                return DropdownMenuItem(
+                                  value: location,
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 5.0),
+                                    child: Text(
+                                      location.name,
+                                      style: const TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              }).toList(),
+                              onChanged: (Location? newValue) {
+                                setState(() {
+                                  selectedLocation = newValue!;
+                                });
+                              },
+                            );
+                          }
+
+                          return const Text("No locations");
+                        },
+                      ),
+                    ],
+                  ),
+                  verticalSpace(
+                    height: 30,
+                  ),
+                  Container(
+                    padding: const EdgeInsets.all(5),
+                    decoration: BoxDecoration(
+                      color: Colors.orangeAccent,
+                      borderRadius: BorderRadius.circular(5),
+                    ),
+                    child: const Text(
+                      "Note: 3% delivery charge",
                       style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w500,
                       ),
                     ),
-                    BlocBuilder<LocationBloc, LocationState>(
-                      builder: (context, state) {
-                        if (state is LoadedLocations) {
-                          return DropdownButton(
-                            underline: const SizedBox.shrink(),
-                            focusColor: Colors.white,
-                            borderRadius: BorderRadius.circular(10),
-                            value: selectedLocation,
-                            icon: const Icon(Icons.keyboard_arrow_down),
-                            items: locations.map((Location location) {
-                              return DropdownMenuItem(
-                                value: location,
-                                child: Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 5.0),
-                                  child: Text(
-                                    location.name,
-                                    style: const TextStyle(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                                ),
-                              );
-                            }).toList(),
-                            onChanged: (Location? newValue) {
-                              setState(() {
-                                selectedLocation = newValue!;
-                              });
-                            },
-                          );
-                        }
-
-                        return const Text("No locations");
-                      },
-                    ),
-                  ],
-                ),
-                verticalSpace(
-                  height: 30,
-                ),
-                Container(
-                  padding: const EdgeInsets.all(5),
-                  decoration: BoxDecoration(
-                    color: Colors.orangeAccent,
-                    borderRadius: BorderRadius.circular(5),
                   ),
-                  child: const Text(
-                    "Note: 3% delivery charge",
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
-                    ),
+                  verticalSpace(
+                    height: 30,
                   ),
-                ),
-                verticalSpace(
-                  height: 30,
-                ),
-                Row(
-                  children: [
-                    Expanded(
-                      child: ElevatedButton(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            CheckoutScreen.route(),
-                          );
-                        },
-                        child: const Text(
-                          "Make Payment",
+                  Row(
+                    children: [
+                      Expanded(
+                        child: ElevatedButton(
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              CheckoutScreen.route(),
+                            );
+                          },
+                          child: const Text(
+                            "Make Payment",
+                          ),
                         ),
                       ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ],
+                    ],
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
       floatingActionButton: FloatingActionButton(

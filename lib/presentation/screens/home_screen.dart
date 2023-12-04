@@ -56,7 +56,8 @@ class _HomeScreenState extends State<HomeScreen> {
         title: const Text(
           "Wholecela",
           style: TextStyle(
-            fontWeight: FontWeight.w400,
+            fontWeight: FontWeight.w500,
+            fontSize: 18,
           ),
         ),
         actions: [
@@ -73,94 +74,101 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(15.0),
-        child: Column(
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                SizedBox(
-                  width: MediaQuery.of(context).size.width * .6,
-                  child: CupertinoSearchTextField(
-                    prefixIcon: const Icon(
-                      CupertinoIcons.search,
-                      size: 16,
+      body: RefreshIndicator(
+        onRefresh: () async {
+          context.read<LocationBloc>().add(LoadLocations());
+          context.read<SellerBloc>().add(LoadSellers());
+        },
+        color: kPrimaryColor,
+        child: Padding(
+          padding: const EdgeInsets.all(15.0),
+          child: Column(
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width * .6,
+                    child: CupertinoSearchTextField(
+                      prefixIcon: const Icon(
+                        CupertinoIcons.search,
+                        size: 16,
+                      ),
+                      style: const TextStyle(
+                        fontSize: 14,
+                      ),
+                      controller: searchController,
+                      onChanged: (value) {},
+                      onSubmitted: (value) {},
+                      autocorrect: true,
                     ),
-                    style: const TextStyle(
-                      fontSize: 14,
-                    ),
-                    controller: searchController,
-                    onChanged: (value) {},
-                    onSubmitted: (value) {},
-                    autocorrect: true,
                   ),
-                ),
-                BlocBuilder<LocationBloc, LocationState>(
-                  builder: (context, state) {
-                    if (state is LoadedLocations) {
-                      return DropdownButton(
-                        underline: const SizedBox.shrink(),
-                        focusColor: Colors.white,
-                        borderRadius: BorderRadius.circular(10),
-                        value: selectedLocation,
-                        icon: const Icon(Icons.keyboard_arrow_down),
-                        items: locations.map((Location location) {
-                          return DropdownMenuItem(
-                            value: location,
-                            child: Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 5.0),
-                              child: Text(
-                                location.name,
-                                style: const TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w500,
+                  BlocBuilder<LocationBloc, LocationState>(
+                    builder: (context, state) {
+                      if (state is LoadedLocations) {
+                        return DropdownButton(
+                          underline: const SizedBox.shrink(),
+                          focusColor: Colors.white,
+                          borderRadius: BorderRadius.circular(10),
+                          value: selectedLocation,
+                          icon: const Icon(Icons.keyboard_arrow_down),
+                          items: locations.map((Location location) {
+                            return DropdownMenuItem(
+                              value: location,
+                              child: Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 5.0),
+                                child: Text(
+                                  location.name,
+                                  style: const TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w500,
+                                  ),
                                 ),
                               ),
-                            ),
-                          );
-                        }).toList(),
-                        onChanged: (Location? newValue) {
-                          setState(() {
-                            selectedLocation = newValue!;
+                            );
+                          }).toList(),
+                          onChanged: (Location? newValue) {
+                            setState(() {
+                              selectedLocation = newValue!;
+                            });
+                          },
+                        );
+                      }
+
+                      return const Text("No locations");
+                    },
+                  ),
+                ],
+              ),
+              verticalSpace(
+                height: 15,
+              ),
+              Expanded(
+                child: BlocBuilder<SellerBloc, SellerState>(
+                  builder: (context, state) {
+                    if (state is LoadedSellers) {
+                      List<Seller> sellers = state.sellers;
+                      return ListView.builder(
+                          itemCount: sellers.length,
+                          itemBuilder: (context, index) {
+                            return WholeSaleCard(
+                              seller: sellers[index],
+                            );
                           });
-                        },
-                      );
                     }
 
-                    return const Text("No locations");
+                    return const Center(
+                      child: CircularProgressIndicator(
+                        color: kPrimaryColor,
+                      ),
+                    );
                   },
                 ),
-              ],
-            ),
-            verticalSpace(
-              height: 15,
-            ),
-            Expanded(
-              child: BlocBuilder<SellerBloc, SellerState>(
-                builder: (context, state) {
-                  if (state is LoadedSellers) {
-                    List<Seller> sellers = state.sellers;
-                    return ListView.builder(
-                        itemCount: sellers.length,
-                        itemBuilder: (context, index) {
-                          return WholeSaleCard(
-                            seller: sellers[index],
-                          );
-                        });
-                  }
-
-                  return const Center(
-                    child: CircularProgressIndicator(
-                      color: kPrimaryColor,
-                    ),
-                  );
-                },
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
       floatingActionButton: FloatingActionButton(

@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:wholecela/business_logic/category_bloc/category_bloc.dart';
+import 'package:wholecela/business_logic/seller/seller_bloc.dart';
 import 'package:wholecela/business_logic/user_bloc/user_bloc.dart';
 import 'package:wholecela/data/models/category.dart';
 import 'package:wholecela/data/models/seller.dart';
@@ -52,7 +53,9 @@ class _WholesaleScreenState extends State<WholesaleScreen> {
 
   @override
   Widget build(BuildContext context) {
-    List<Product> products = widget.seller.products;
+    Seller seller = widget.seller;
+    List<Product> products = seller.products;
+
     return Scaffold(
       backgroundColor: kBackgroundColor,
       drawer: MenuDrawer(
@@ -61,7 +64,7 @@ class _WholesaleScreenState extends State<WholesaleScreen> {
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text(
-          widget.seller.name,
+          seller.name,
           style: const TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.bold,
@@ -71,116 +74,136 @@ class _WholesaleScreenState extends State<WholesaleScreen> {
           IconButton(
             onPressed: () {},
             icon: AvatarImage(
-              imageUrl: widget.seller.imageUrl,
+              imageUrl: seller.imageUrl,
               isSeller: true,
             ),
           ),
         ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(15.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              "Shop Items - ${products.length}",
-              style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            verticalSpace(height: 15),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                SizedBox(
-                  width: MediaQuery.of(context).size.width * .6,
-                  child: CupertinoSearchTextField(
-                    prefixIcon: const Icon(
-                      CupertinoIcons.search,
-                      size: 16,
-                    ),
+      body: BlocConsumer<SellerBloc, SellerState>(
+        listener: (context, state) {
+          if (state is LoadedSeller) {
+            setState(() {
+              seller = state.seller;
+            });
+          } else {
+            context.read<SellerBloc>().add(LoadSeller(id: seller.id));
+          }
+        },
+        builder: (context, state) {
+          return RefreshIndicator(
+            onRefresh: () async {
+              context.read<SellerBloc>().add(LoadSeller(id: seller.id));
+              context.read<CategoryBloc>().add(LoadCategories());
+            },
+            color: kPrimaryColor,
+            child: Padding(
+              padding: const EdgeInsets.all(15.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    "Shop Items - ${products.length}",
                     style: const TextStyle(
-                      fontSize: 14,
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
                     ),
-                    controller: searchController,
-                    onChanged: (value) {},
-                    onSubmitted: (value) {},
-                    autocorrect: true,
                   ),
-                ),
-                BlocBuilder<CategoryBloc, CategoryState>(
-                  builder: (context, state) {
-                    if (state is LoadedCategories) {
-                      return DropdownButton(
-                        underline: const SizedBox.shrink(),
-                        focusColor: Colors.white,
-                        borderRadius: BorderRadius.circular(10),
-                        value: selectedCategory,
-                        icon: const Icon(Icons.keyboard_arrow_down),
-                        items: categories.map((Category category) {
-                          return DropdownMenuItem(
-                            value: category,
-                            child: Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 5.0),
-                              child: Text(
-                                category.name,
-                                style: const TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                            ),
-                          );
-                        }).toList(),
-                        onChanged: (Category? newValue) {
-                          setState(() {
-                            selectedCategory = newValue!;
-                          });
-                        },
-                      );
-                    }
-
-                    return const Text("No Categories");
-                  },
-                ),
-              ],
-            ),
-            verticalSpace(
-              height: 15,
-            ),
-            Expanded(
-              child: GridView.count(
-                //shrinkWrap: true,
-                crossAxisSpacing: 10,
-                mainAxisSpacing: 10,
-                crossAxisCount: 2,
-                childAspectRatio: 1.6 / 2,
-                physics: const NeverScrollableScrollPhysics(),
-                children: List.generate(
-                  products.length,
-                  (index) => GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        ProductScreen.route(
-                          seller: widget.seller,
-                          productId: products[index].id,
+                  verticalSpace(height: 15),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      SizedBox(
+                        width: MediaQuery.of(context).size.width * .6,
+                        child: CupertinoSearchTextField(
+                          prefixIcon: const Icon(
+                            CupertinoIcons.search,
+                            size: 16,
+                          ),
+                          style: const TextStyle(
+                            fontSize: 14,
+                          ),
+                          controller: searchController,
+                          onChanged: (value) {},
+                          onSubmitted: (value) {},
+                          autocorrect: true,
                         ),
-                      );
-                    },
-                    child: ProductItemCard(
-                      product: products[index],
+                      ),
+                      BlocBuilder<CategoryBloc, CategoryState>(
+                        builder: (context, state) {
+                          if (state is LoadedCategories) {
+                            return DropdownButton(
+                              underline: const SizedBox.shrink(),
+                              focusColor: Colors.white,
+                              borderRadius: BorderRadius.circular(10),
+                              value: selectedCategory,
+                              icon: const Icon(Icons.keyboard_arrow_down),
+                              items: categories.map((Category category) {
+                                return DropdownMenuItem(
+                                  value: category,
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 5.0),
+                                    child: Text(
+                                      category.name,
+                                      style: const TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              }).toList(),
+                              onChanged: (Category? newValue) {
+                                setState(() {
+                                  selectedCategory = newValue!;
+                                });
+                              },
+                            );
+                          }
+
+                          return const Text("No Categories");
+                        },
+                      ),
+                    ],
+                  ),
+                  verticalSpace(
+                    height: 15,
+                  ),
+                  Expanded(
+                    child: GridView.count(
+                      //shrinkWrap: true,
+                      crossAxisSpacing: 10,
+                      mainAxisSpacing: 10,
+                      crossAxisCount: 2,
+                      childAspectRatio: 1.6 / 2,
+                      physics: const NeverScrollableScrollPhysics(),
+                      children: List.generate(
+                        products.length,
+                        (index) => GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              ProductScreen.route(
+                                seller: widget.seller,
+                                productId: products[index].id,
+                              ),
+                            );
+                          },
+                          child: ProductItemCard(
+                            product: products[index],
+                          ),
+                        ),
+                      ),
                     ),
                   ),
-                ),
+                ],
               ),
             ),
-          ],
-        ),
+          );
+        },
       ),
       floatingActionButton: FloatingActionButton(
         shape: const CircleBorder(),

@@ -26,5 +26,22 @@ class SellerBloc extends Bloc<SellerEvent, SellerState> {
         );
       }
     });
+
+    on<LoadSeller>((event, emit) async {
+      emit(SellerStateLoading());
+      try {
+        final seller = await sellerRepository.getSeller(
+          id: event.id,
+        );
+
+        emit(LoadedSeller(seller: seller));
+      } on AppException catch (e) {
+        emit(
+          SellerStateError(
+            message: e,
+          ),
+        );
+      }
+    });
   }
 }

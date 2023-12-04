@@ -38,8 +38,8 @@ SizedBox horizontalSpace({double width = 8.0}) {
 
 abstract class AppUrls {
   //static String SERVER_URL = "https://www.micasalistings.com";
-  //static String SERVER_URL = "http://192.168.254.61:3000";
-  static String SERVER_URL = "http://localhost:3000";
+  static String SERVER_URL = "http://192.168.254.61:3000";
+  //static String SERVER_URL = "http://localhost:3000";
 }
 
 const Color primaryColor = Color(0xFF2967FF);

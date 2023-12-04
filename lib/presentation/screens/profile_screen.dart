@@ -7,6 +7,7 @@ import 'package:wholecela/core/config/constants.dart';
 import 'package:wholecela/data/models/location.dart';
 import 'package:wholecela/data/models/user.dart';
 import 'package:wholecela/presentation/screens/auth/reset_screen.dart';
+import 'package:wholecela/presentation/widgets/avatar_image.dart';
 import 'package:wholecela/presentation/widgets/menu_drawer.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -90,252 +91,256 @@ class _ProfileScreenState extends State<ProfileScreen> {
           actions: [
             IconButton(
               onPressed: () {
-                Navigator.push(
-                  context,
-                  ProfileScreen.route(),
-                );
+                // Navigator.push(
+                //   context,
+                //   ProfileScreen.route(),
+                // );
               },
-              icon: const CircleAvatar(
-                backgroundImage: AssetImage(
-                  "assets/images/user.jpg",
-                ),
+              icon: AvatarImage(
+                imageUrl: loggedUser.imageUrl,
               ),
             ),
           ],
         ),
-        body: Padding(
-          padding: const EdgeInsets.all(15.0),
-          child: ListView(
-            children: [
-              const Text(
-                "Account Details",
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w500,
+        body: RefreshIndicator(
+          onRefresh: () async {
+            context.read<LocationBloc>().add(LoadLocations());
+          },
+          color: kPrimaryColor,
+          child: Padding(
+            padding: const EdgeInsets.all(15.0),
+            child: ListView(
+              children: [
+                const Text(
+                  "Account Details",
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
-              ),
-              verticalSpace(),
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  const CircleAvatar(
-                    backgroundImage: AssetImage(
-                      "assets/images/user.jpg",
-                    ),
-                  ),
-                  horizontalSpace(),
-                  IconButton(
-                    onPressed: () {},
-                    icon: const Icon(
-                      Icons.edit,
-                      size: 16,
-                    ),
-                  ),
-                ],
-              ),
-              verticalSpace(),
-              EditUserForm(
-                label: "Name",
-                formKey: _nameFormKey,
-                controller: nameController,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Name is required';
-                  }
-                  return null;
-                },
-                onPressed: () {
-                  if (_nameFormKey.currentState!.validate()) {
-                    context.read<UserBloc>().add(
-                          UserEventUpdateDetails(
-                            user: loggedUser.copyWith(
-                              name: nameController.text,
-                            ),
-                          ),
-                        );
-                  }
-                },
-              ),
-              verticalSpace(),
-              EditUserForm(
-                label: "Phone",
-                formKey: _phoneFormKey,
-                controller: phoneController,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Phone is required';
-                  }
-                  return null;
-                },
-                onPressed: () {
-                  if (_phoneFormKey.currentState!.validate()) {
-                    context.read<UserBloc>().add(
-                          UserEventUpdateDetails(
-                            user: loggedUser.copyWith(
-                              phone: phoneController.text,
-                            ),
-                          ),
-                        );
-                  }
-                },
-              ),
-              verticalSpace(),
-              EditUserForm(
-                label: "Street Address",
-                formKey: _streetFormKey,
-                controller: streetController,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Street address is required';
-                  }
-                  return null;
-                },
-                onPressed: () {
-                  if (_streetFormKey.currentState!.validate()) {
-                    context.read<UserBloc>().add(
-                          UserEventUpdateDetails(
-                            user: loggedUser.copyWith(
-                              street: streetController.text,
-                            ),
-                          ),
-                        );
-                  }
-                },
-              ),
-              verticalSpace(),
-              // EditUserForm(
-              //   label: "LatLng (lat,lng)",
-              //   formKey: _latlngFormKey,
-              //   controller: latlngController,
-              //   validator: (value) {
-              //     if (value == null || value.isEmpty) {
-              //       return 'LatLng is required';
-              //     }
-
-              //     return null;
-              //   },
-              //   onPressed: () {
-              //     if (_latlngFormKey.currentState!.validate()) {
-              //       context.read<UserBloc>().add(
-              //             UserEventUpdateDetails(
-              //               user: loggedUser.copyWith(
-              //                 latlng: latlngController.text,
-              //               ),
-              //             ),
-              //           );
-              //     }
-              //   },
-              // ),
-              //verticalSpace(),
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  const Text(
-                    "Location: ",
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                  BlocBuilder<LocationBloc, LocationState>(
-                    builder: (context, state) {
-                      if (state is LoadedLocations) {
-                        return DropdownButton(
-                          underline: const SizedBox.shrink(),
-                          focusColor: Colors.white,
-                          borderRadius: BorderRadius.circular(10),
-                          value: selectedLocation,
-                          icon: const Icon(Icons.keyboard_arrow_down),
-                          items: locations.map((Location location) {
-                            return DropdownMenuItem(
-                              value: location,
-                              child: Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 5.0),
-                                child: Text(
-                                  location.name,
-                                  style: const TextStyle(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                              ),
-                            );
-                          }).toList(),
-                          onChanged: (Location? newValue) {
-                            setState(() {
-                              selectedLocation = newValue!;
-                            });
-                          },
-                        );
-                      }
-
-                      return const Text("No locations");
-                    },
-                  ),
-                ],
-              ),
-              verticalSpace(height: 15),
-              const Text(
-                "Login Security",
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-              verticalSpace(height: 15),
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  const Text(
-                    "********",
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                  horizontalSpace(),
-                  IconButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        ResetScreen.route(),
-                      );
-                    },
-                    icon: const Icon(
-                      Icons.edit,
-                      size: 16,
-                    ),
-                  ),
-                ],
-              ),
-              verticalSpace(
-                height: 30,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Expanded(
-                    child: ElevatedButton(
-                      onPressed: () {
-                        context
-                            .read<AuthenticationBloc>()
-                            .add(AuthenticationEventLogoutUser());
-                        // Navigator.pushAndRemoveUntil(
-                        //   context,
-                        //   LoginScreen.route(),
-                        //   ((Route<dynamic> route) => false),
-                        // );
-                      },
-                      child: const Text(
-                        "Logout",
-                        style: TextStyle(color: kWarningColor),
+                verticalSpace(),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    const CircleAvatar(
+                      backgroundImage: AssetImage(
+                        "assets/images/user.jpg",
                       ),
                     ),
+                    horizontalSpace(),
+                    IconButton(
+                      onPressed: () {},
+                      icon: const Icon(
+                        Icons.edit,
+                        size: 16,
+                      ),
+                    ),
+                  ],
+                ),
+                verticalSpace(),
+                EditUserForm(
+                  label: "Name",
+                  formKey: _nameFormKey,
+                  controller: nameController,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Name is required';
+                    }
+                    return null;
+                  },
+                  onPressed: () {
+                    if (_nameFormKey.currentState!.validate()) {
+                      context.read<UserBloc>().add(
+                            UserEventUpdateDetails(
+                              user: loggedUser.copyWith(
+                                name: nameController.text,
+                              ),
+                            ),
+                          );
+                    }
+                  },
+                ),
+                verticalSpace(),
+                EditUserForm(
+                  label: "Phone",
+                  formKey: _phoneFormKey,
+                  controller: phoneController,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Phone is required';
+                    }
+                    return null;
+                  },
+                  onPressed: () {
+                    if (_phoneFormKey.currentState!.validate()) {
+                      context.read<UserBloc>().add(
+                            UserEventUpdateDetails(
+                              user: loggedUser.copyWith(
+                                phone: phoneController.text,
+                              ),
+                            ),
+                          );
+                    }
+                  },
+                ),
+                verticalSpace(),
+                EditUserForm(
+                  label: "Street Address",
+                  formKey: _streetFormKey,
+                  controller: streetController,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Street address is required';
+                    }
+                    return null;
+                  },
+                  onPressed: () {
+                    if (_streetFormKey.currentState!.validate()) {
+                      context.read<UserBloc>().add(
+                            UserEventUpdateDetails(
+                              user: loggedUser.copyWith(
+                                street: streetController.text,
+                              ),
+                            ),
+                          );
+                    }
+                  },
+                ),
+                verticalSpace(),
+                // EditUserForm(
+                //   label: "LatLng (lat,lng)",
+                //   formKey: _latlngFormKey,
+                //   controller: latlngController,
+                //   validator: (value) {
+                //     if (value == null || value.isEmpty) {
+                //       return 'LatLng is required';
+                //     }
+
+                //     return null;
+                //   },
+                //   onPressed: () {
+                //     if (_latlngFormKey.currentState!.validate()) {
+                //       context.read<UserBloc>().add(
+                //             UserEventUpdateDetails(
+                //               user: loggedUser.copyWith(
+                //                 latlng: latlngController.text,
+                //               ),
+                //             ),
+                //           );
+                //     }
+                //   },
+                // ),
+                //verticalSpace(),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    const Text(
+                      "Location: ",
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    BlocBuilder<LocationBloc, LocationState>(
+                      builder: (context, state) {
+                        if (state is LoadedLocations) {
+                          return DropdownButton(
+                            underline: const SizedBox.shrink(),
+                            focusColor: Colors.white,
+                            borderRadius: BorderRadius.circular(10),
+                            value: selectedLocation,
+                            icon: const Icon(Icons.keyboard_arrow_down),
+                            items: locations.map((Location location) {
+                              return DropdownMenuItem(
+                                value: location,
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 5.0),
+                                  child: Text(
+                                    location.name,
+                                    style: const TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                ),
+                              );
+                            }).toList(),
+                            onChanged: (Location? newValue) {
+                              setState(() {
+                                selectedLocation = newValue!;
+                              });
+                            },
+                          );
+                        }
+
+                        return const Text("No locations");
+                      },
+                    ),
+                  ],
+                ),
+                verticalSpace(height: 15),
+                const Text(
+                  "Login Security",
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w500,
                   ),
-                ],
-              ),
-            ],
+                ),
+                verticalSpace(height: 15),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    const Text(
+                      "********",
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    horizontalSpace(),
+                    IconButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          ResetScreen.route(),
+                        );
+                      },
+                      icon: const Icon(
+                        Icons.edit,
+                        size: 16,
+                      ),
+                    ),
+                  ],
+                ),
+                verticalSpace(
+                  height: 30,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed: () {
+                          context
+                              .read<AuthenticationBloc>()
+                              .add(AuthenticationEventLogoutUser());
+                          // Navigator.pushAndRemoveUntil(
+                          //   context,
+                          //   LoginScreen.route(),
+                          //   ((Route<dynamic> route) => false),
+                          // );
+                        },
+                        child: const Text(
+                          "Logout",
+                          style: TextStyle(color: kWarningColor),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ),

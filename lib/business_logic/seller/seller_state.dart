@@ -11,6 +11,19 @@ final class SellerStateInitial extends SellerState {}
 
 class SellerStateLoading extends SellerState {}
 
+class LoadedSeller extends SellerState {
+  final Seller seller;
+  const LoadedSeller({
+    required this.seller,
+  });
+
+  @override
+  List<Object> get props => [seller];
+
+  @override
+  bool? get stringify => true;
+}
+
 class LoadedSellers extends SellerState {
   final List<Seller> sellers;
   const LoadedSellers({

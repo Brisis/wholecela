@@ -10,7 +10,26 @@ class SellerProvider {
   Future<dynamic> getSellers() async {
     try {
       final response = await http.get(
-        Uri.parse("${AppUrls.SERVER_URL}/users?role=SELLER"),
+        Uri.parse("${AppUrls.SERVER_URL}/users?role=seller"),
+        headers: {
+          "Content-Type": "application/json",
+          "accept": "application/json",
+          "Access-Control-Allow-Origin": "*"
+        },
+      );
+
+      return HttpHandler.returnResponse(response);
+    } on SocketException {
+      throw const FetchDataException(message: "No Internet connection");
+    } on TimeoutException {
+      throw const ApiNotRespondingException(message: "Api not responding");
+    }
+  }
+
+  Future<dynamic> getSeller({required String id}) async {
+    try {
+      final response = await http.get(
+        Uri.parse("${AppUrls.SERVER_URL}/users/$id?role=seller"),
         headers: {
           "Content-Type": "application/json",
           "accept": "application/json",

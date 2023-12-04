@@ -13,10 +13,10 @@ class AvatarImage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 40,
-      width: 40,
+      height: 30,
+      width: 30,
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(20.0),
+        borderRadius: BorderRadius.circular(15.0),
         image: imageUrl != null
             ? DecorationImage(
                 image: NetworkImage(

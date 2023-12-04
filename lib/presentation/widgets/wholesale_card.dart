@@ -32,77 +32,82 @@ class WholeSaleCard extends StatelessWidget {
             borderRadius: BorderRadius.circular(5.0),
           ),
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Row(
-                children: [
-                  Container(
-                    height: 50,
-                    width: 50,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(5),
-                      image: seller.imageUrl != null
-                          ? DecorationImage(
-                              //image: AssetImage(product.imageUrl!),
-                              image: NetworkImage(
-                                  "${AppUrls.SERVER_URL}/uploads/thumbnails/${seller.imageUrl}"),
-                              fit: BoxFit.cover,
-                            )
-                          : const DecorationImage(
-                              image: AssetImage("assets/images/shop.png"),
-                              fit: BoxFit.cover,
-                            ),
+              Expanded(
+                child: Row(
+                  children: [
+                    Container(
+                      height: 40,
+                      width: 40,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(5),
+                        image: seller.imageUrl != null
+                            ? DecorationImage(
+                                //image: AssetImage(product.imageUrl!),
+                                image: NetworkImage(
+                                    "${AppUrls.SERVER_URL}/uploads/thumbnails/${seller.imageUrl}"),
+                                fit: BoxFit.cover,
+                              )
+                            : const DecorationImage(
+                                image: AssetImage("assets/images/shop.png"),
+                                fit: BoxFit.cover,
+                              ),
+                      ),
                     ),
-                  ),
-                  horizontalSpace(
-                    width: 8,
-                  ),
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        seller.name,
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      verticalSpace(
-                        height: 10,
-                      ),
-                      Row(
+                    horizontalSpace(
+                      width: 8,
+                    ),
+                    Expanded(
+                      child: Column(
                         mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            "${seller.products.length} Products",
+                            seller.name,
                             style: const TextStyle(
-                              fontSize: 12,
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
                             ),
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 2,
                           ),
-                          horizontalSpace(
-                            width: 8,
+                          verticalSpace(
+                            height: 10,
                           ),
-                          const Icon(
-                            Icons.brightness_1_rounded,
-                            size: 5,
-                          ),
-                          horizontalSpace(
-                            width: 8,
-                          ),
-                          Text(
-                            "${getProductsCategories(seller.products)} Categories",
-                            style: const TextStyle(
-                              fontSize: 12,
-                            ),
-                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Text(
+                                "${seller.products.length} Products",
+                                style: const TextStyle(
+                                  fontSize: 12,
+                                ),
+                              ),
+                              horizontalSpace(
+                                width: 8,
+                              ),
+                              const Icon(
+                                Icons.brightness_1_rounded,
+                                size: 5,
+                              ),
+                              horizontalSpace(
+                                width: 8,
+                              ),
+                              Text(
+                                "${getProductsCategories(seller.products)} Categories",
+                                style: const TextStyle(
+                                  fontSize: 12,
+                                ),
+                              ),
+                            ],
+                          )
                         ],
-                      )
-                    ],
-                  ),
-                ],
+                      ),
+                    ),
+                  ],
+                ),
               ),
               const Icon(Icons.store),
             ],
