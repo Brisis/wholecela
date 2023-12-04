@@ -47,6 +47,8 @@ class _WholesaleScreenState extends State<WholesaleScreen> {
     categories = context.read<CategoryBloc>().state.categories!;
     selectedCategory =
         categories.firstWhere((category) => category.name == "All");
+
+    context.read<SellerBloc>().add(LoadSeller(id: widget.seller.id));
   }
 
   TextEditingController searchController = TextEditingController();
@@ -80,16 +82,7 @@ class _WholesaleScreenState extends State<WholesaleScreen> {
           ),
         ],
       ),
-      body: BlocConsumer<SellerBloc, SellerState>(
-        listener: (context, state) {
-          if (state is LoadedSeller) {
-            setState(() {
-              seller = state.seller;
-            });
-          } else {
-            context.read<SellerBloc>().add(LoadSeller(id: seller.id));
-          }
-        },
+      body: BlocBuilder<SellerBloc, SellerState>(
         builder: (context, state) {
           return RefreshIndicator(
             onRefresh: () async {
@@ -103,12 +96,42 @@ class _WholesaleScreenState extends State<WholesaleScreen> {
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    "Shop Items - ${products.length}",
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Text(
+                        "${products.length} Products",
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      Row(
+                        children: [
+                          IconButton(
+                            onPressed: () {
+                              context
+                                  .read<SellerBloc>()
+                                  .add(LoadSeller(id: seller.id));
+                              context
+                                  .read<CategoryBloc>()
+                                  .add(LoadCategories());
+                            },
+                            icon: const Icon(
+                              Icons.refresh,
+                            ),
+                          ),
+                          horizontalSpace(),
+                          IconButton(
+                            onPressed: () {},
+                            icon: const Icon(
+                              Icons.call,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
                   verticalSpace(height: 15),
                   Row(
@@ -174,12 +197,12 @@ class _WholesaleScreenState extends State<WholesaleScreen> {
                   ),
                   Expanded(
                     child: GridView.count(
-                      //shrinkWrap: true,
+                      shrinkWrap: true,
                       crossAxisSpacing: 10,
                       mainAxisSpacing: 10,
                       crossAxisCount: 2,
                       childAspectRatio: 1.6 / 2,
-                      physics: const NeverScrollableScrollPhysics(),
+                      //physics: const NeverScrollableScrollPhysics(),
                       children: List.generate(
                         products.length,
                         (index) => GestureDetector(
@@ -214,14 +237,14 @@ class _WholesaleScreenState extends State<WholesaleScreen> {
           );
         },
         tooltip: 'My Cart',
-        child: const Row(
+        child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Icon(Icons.shopping_basket),
+            const Icon(Icons.shopping_basket),
             Text(
-              "12",
-              style: TextStyle(
+              "${widget.seller.products.length}",
+              style: const TextStyle(
                 fontSize: 13,
                 fontWeight: FontWeight.w500,
               ),

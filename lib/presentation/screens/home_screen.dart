@@ -36,11 +36,10 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
+    context.read<SellerBloc>().add(LoadSellers());
     loggedUser = context.read<UserBloc>().state.user!;
     locations = context.read<LocationBloc>().state.locations!;
     selectedLocation = locations.first;
-
-    context.read<SellerBloc>().add(LoadSellers());
   }
 
   TextEditingController searchController = TextEditingController();
