@@ -122,7 +122,7 @@ class _ProductScreenState extends State<ProductScreen> {
                       image: product.imageUrl != null
                           ? DecorationImage(
                               image: NetworkImage(
-                                  "${AppUrls.SERVER_URL}/uploads/thumbnails/${product.imageUrl}"),
+                                  "${AppUrls.SERVER_URL}/${product.imageUrl}"),
                               fit: BoxFit.cover,
                             )
                           : const DecorationImage(

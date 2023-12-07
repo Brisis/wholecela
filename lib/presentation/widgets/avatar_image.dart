@@ -19,8 +19,8 @@ class AvatarImage extends StatelessWidget {
         borderRadius: BorderRadius.circular(15.0),
         image: imageUrl != null
             ? DecorationImage(
-                image: NetworkImage(
-                    "${AppUrls.SERVER_URL}/uploads/thumbnails/$imageUrl"),
+                image:
+                    NetworkImage("${AppUrls.SERVER_URL}/thumbnails/$imageUrl"),
                 fit: BoxFit.cover,
               )
             : DecorationImage(

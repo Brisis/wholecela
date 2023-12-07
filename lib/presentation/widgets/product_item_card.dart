@@ -33,7 +33,7 @@ class ProductItemCard extends StatelessWidget {
                     ? DecorationImage(
                         //image: AssetImage(product.imageUrl!),
                         image: NetworkImage(
-                            "${AppUrls.SERVER_URL}/uploads/thumbnails/${product.imageUrl}"),
+                            "${AppUrls.SERVER_URL}/thumbnails/${product.imageUrl}"),
                         fit: BoxFit.cover,
                       )
                     : const DecorationImage(

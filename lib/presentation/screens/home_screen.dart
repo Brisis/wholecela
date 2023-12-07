@@ -145,10 +145,16 @@ class _HomeScreenState extends State<HomeScreen> {
                 height: 15,
               ),
               Expanded(
-                child: BlocBuilder<SellerBloc, SellerState>(
+                child: BlocConsumer<SellerBloc, SellerState>(
+                  listener: (context, state) {
+                    if (state is LoadedSeller) {
+                      context.read<SellerBloc>().add(LoadSellers());
+                    }
+                  },
                   builder: (context, state) {
                     if (state is LoadedSellers) {
                       List<Seller> sellers = state.sellers;
+                      // List<Seller> sellers = state.sellers;
                       return ListView.builder(
                           itemCount: sellers.length,
                           itemBuilder: (context, index) {
