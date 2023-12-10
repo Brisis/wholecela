@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:wholecela/business_logic/auth_bloc/authentication_bloc.dart';
+import 'package:wholecela/business_logic/cart_bloc/cart_bloc.dart';
 import 'package:wholecela/business_logic/user_bloc/user_bloc.dart';
 import 'package:wholecela/presentation/app/app_blocs.dart';
 import 'package:wholecela/presentation/app/app_repositories.dart';
@@ -52,6 +53,12 @@ class _MainAppState extends State<MainApp> {
             if (state is AuthenticationStateUserLoggedIn) {
               BlocProvider.of<UserBloc>(context).add(
                 LoadUser(user: state.user),
+              );
+
+              BlocProvider.of<CartBloc>(context).add(
+                LoadCarts(
+                  userId: state.user.id,
+                ),
               );
 
               _navigator!.pushAndRemoveUntil(

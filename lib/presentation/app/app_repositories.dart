@@ -2,6 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:wholecela/data/repositories/authentication/authentication_provider.dart';
 import 'package:wholecela/data/repositories/authentication/authentication_repository.dart';
+import 'package:wholecela/data/repositories/cart/cart_provider.dart';
+import 'package:wholecela/data/repositories/cart/cart_repository.dart';
+import 'package:wholecela/data/repositories/cart_item/cart_item_provider.dart';
+import 'package:wholecela/data/repositories/cart_item/cart_item_repository.dart';
 import 'package:wholecela/data/repositories/category/category_provider.dart';
 import 'package:wholecela/data/repositories/category/category_repository.dart';
 import 'package:wholecela/data/repositories/color/color_provider.dart';
@@ -59,6 +63,16 @@ class AppRepositories extends StatelessWidget {
         RepositoryProvider(
           create: (context) => ProductRepository(
             productProvider: ProductProvider(),
+          ),
+        ),
+        RepositoryProvider(
+          create: (context) => CartRepository(
+            cartProvider: CartProvider(),
+          ),
+        ),
+        RepositoryProvider(
+          create: (context) => CartItemRepository(
+            cartItemProvider: CartItemProvider(),
           ),
         ),
       ],

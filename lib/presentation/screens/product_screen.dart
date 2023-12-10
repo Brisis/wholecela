@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:wholecela/business_logic/color_bloc/color_bloc.dart';
 import 'package:wholecela/business_logic/product/product_bloc.dart';
+import 'package:wholecela/business_logic/seller/seller_bloc.dart';
 import 'package:wholecela/core/extensions/price_formatter.dart';
 import 'package:wholecela/core/extensions/to_hex_color.dart';
 import 'package:wholecela/data/models/color.dart';
@@ -54,7 +55,7 @@ class _ProductScreenState extends State<ProductScreen> {
   }
 
   late List<ColorModel> colors;
-  late ColorModel selectedColor;
+  late ColorModel? selectedColor;
 
   @override
   void initState() {
@@ -63,6 +64,10 @@ class _ProductScreenState extends State<ProductScreen> {
     colors = context.read<ColorBloc>().state.colors!;
     if (colors.isNotEmpty) {
       selectedColor = colors.firstWhere((color) => color.name == "Any");
+    }
+
+    if (colors.isEmpty) {
+      selectedColor = null;
     }
   }
 
@@ -104,9 +109,11 @@ class _ProductScreenState extends State<ProductScreen> {
         child: BlocConsumer<ProductBloc, ProductState>(
           listener: (context, state) {
             if (state is LoadedProduct) {
-              setState(() {
-                productColors = state.product.colors;
-              });
+              if (colors.isNotEmpty) {
+                setState(() {
+                  productColors = state.product.colors;
+                });
+              }
             }
           },
           builder: (context, state) {
@@ -181,66 +188,80 @@ class _ProductScreenState extends State<ProductScreen> {
                                   ),
                                 ),
                                 horizontalSpace(),
-                                selectedColor.name == "Any"
-                                    ? const Text(
-                                        "Any Color",
-                                        style: TextStyle(
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.normal,
-                                        ),
+                                selectedColor != null
+                                    ? SizedBox(
+                                        child: selectedColor!.name == "Any"
+                                            ? const Text(
+                                                "Any Color",
+                                                style: TextStyle(
+                                                  fontSize: 14,
+                                                  fontWeight: FontWeight.normal,
+                                                ),
+                                              )
+                                            : CircleAvatar(
+                                                backgroundColor:
+                                                    HexColor.fromHex(
+                                                        selectedColor!.hexCode),
+                                                radius: 8,
+                                              ),
                                       )
-                                    : CircleAvatar(
-                                        backgroundColor: HexColor.fromHex(
-                                            selectedColor.hexCode),
-                                        radius: 8,
-                                      ),
+                                    : const Text("None"),
                               ],
                             ),
                             BlocBuilder<ColorBloc, ColorState>(
                               builder: (context, state) {
                                 if (state is LoadedColors) {
-                                  return DropdownButton(
-                                    underline: const SizedBox.shrink(),
-                                    focusColor: Colors.white,
-                                    borderRadius: BorderRadius.circular(10),
-                                    value: selectedColor,
-                                    icon: const Icon(Icons.keyboard_arrow_down),
-                                    items: colors.map((ColorModel color) {
-                                      return DropdownMenuItem(
-                                        value: color,
-                                        child: Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                              horizontal: 5.0),
-                                          child: Text(
-                                            color.name,
-                                            style: const TextStyle(
-                                              fontSize: 14,
-                                              fontWeight: FontWeight.w500,
-                                            ),
-                                          ),
-                                        ),
-                                      );
-                                    }).toList(),
-                                    onChanged: (ColorModel? newValue) {
-                                      setState(() {
-                                        selectedColor = newValue!;
-                                      });
+                                  return selectedColor != null
+                                      ? DropdownButton(
+                                          underline: const SizedBox.shrink(),
+                                          focusColor: Colors.white,
+                                          borderRadius:
+                                              BorderRadius.circular(10),
+                                          value: selectedColor,
+                                          icon: const Icon(
+                                              Icons.keyboard_arrow_down),
+                                          items: colors.map((ColorModel color) {
+                                            return DropdownMenuItem(
+                                              value: color,
+                                              child: Padding(
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                        horizontal: 5.0),
+                                                child: Text(
+                                                  color.name,
+                                                  style: const TextStyle(
+                                                    fontSize: 14,
+                                                    fontWeight: FontWeight.w500,
+                                                  ),
+                                                ),
+                                              ),
+                                            );
+                                          }).toList(),
+                                          onChanged: (ColorModel? newValue) {
+                                            setState(() {
+                                              selectedColor = newValue!;
+                                            });
 
-                                      if (!productColors
-                                          .contains(selectedColor)) {
-                                        ScaffoldMessenger.of(context)
-                                            .showSnackBar(
-                                          const SnackBar(
-                                            content: Text(
-                                                "Color not available for product"),
-                                          ),
-                                        );
-                                      }
-                                    },
-                                  );
+                                            if (!productColors
+                                                .contains(selectedColor)) {
+                                              ScaffoldMessenger.of(context)
+                                                  .showSnackBar(
+                                                const SnackBar(
+                                                  content: Text(
+                                                      "Color not available for product"),
+                                                ),
+                                              );
+                                            }
+                                          },
+                                        )
+                                      : const Text("No Colors");
                                 }
 
-                                return const Text("No Colors");
+                                return const Center(
+                                  child: CircularProgressIndicator(
+                                    color: kPrimaryColor,
+                                  ),
+                                );
                               },
                             ),
                           ],
@@ -321,9 +342,10 @@ class _ProductScreenState extends State<ProductScreen> {
       floatingActionButton: FloatingActionButton(
         shape: const CircleBorder(),
         onPressed: () {
+          context.read<SellerBloc>().add(LoadSeller(id: widget.seller.id));
           Navigator.push(
             context,
-            CartScreen.route(seller: widget.seller),
+            CartScreen.route(sellerId: widget.seller.id),
           );
         },
         tooltip: 'My Cart',

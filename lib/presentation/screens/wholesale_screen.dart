@@ -1,9 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:wholecela/business_logic/cart_bloc/cart_bloc.dart';
 import 'package:wholecela/business_logic/category_bloc/category_bloc.dart';
 import 'package:wholecela/business_logic/seller/seller_bloc.dart';
 import 'package:wholecela/business_logic/user_bloc/user_bloc.dart';
+import 'package:wholecela/data/models/cart.dart';
 import 'package:wholecela/data/models/category.dart';
 import 'package:wholecela/data/models/seller.dart';
 import 'package:wholecela/data/models/user.dart';
@@ -37,7 +39,7 @@ class WholesaleScreen extends StatefulWidget {
 class _WholesaleScreenState extends State<WholesaleScreen> {
   late User loggedUser;
 
-  late Category selectedCategory;
+  late Category? selectedCategory;
   late List<Category> categories;
 
   @override
@@ -45,10 +47,23 @@ class _WholesaleScreenState extends State<WholesaleScreen> {
     super.initState();
     loggedUser = context.read<UserBloc>().state.user!;
     categories = context.read<CategoryBloc>().state.categories!;
-    selectedCategory =
-        categories.firstWhere((category) => category.name == "All");
+    if (categories.isNotEmpty) {
+      selectedCategory =
+          categories.firstWhere((category) => category.name == "All");
+    }
+
+    if (categories.isEmpty) {
+      selectedCategory = null;
+    }
 
     context.read<SellerBloc>().add(LoadSeller(id: widget.seller.id));
+
+    context.read<CartBloc>().add(
+          LoadCart(
+            userId: loggedUser.id,
+            sellerId: widget.seller.id,
+          ),
+        );
   }
 
   TextEditingController searchController = TextEditingController();
@@ -157,37 +172,43 @@ class _WholesaleScreenState extends State<WholesaleScreen> {
                       BlocBuilder<CategoryBloc, CategoryState>(
                         builder: (context, state) {
                           if (state is LoadedCategories) {
-                            return DropdownButton(
-                              underline: const SizedBox.shrink(),
-                              focusColor: Colors.white,
-                              borderRadius: BorderRadius.circular(10),
-                              value: selectedCategory,
-                              icon: const Icon(Icons.keyboard_arrow_down),
-                              items: categories.map((Category category) {
-                                return DropdownMenuItem(
-                                  value: category,
-                                  child: Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 5.0),
-                                    child: Text(
-                                      category.name,
-                                      style: const TextStyle(
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w500,
-                                      ),
-                                    ),
-                                  ),
-                                );
-                              }).toList(),
-                              onChanged: (Category? newValue) {
-                                setState(() {
-                                  selectedCategory = newValue!;
-                                });
-                              },
-                            );
+                            return selectedCategory != null
+                                ? DropdownButton(
+                                    underline: const SizedBox.shrink(),
+                                    focusColor: Colors.white,
+                                    borderRadius: BorderRadius.circular(10),
+                                    value: selectedCategory,
+                                    icon: const Icon(Icons.keyboard_arrow_down),
+                                    items: categories.map((Category category) {
+                                      return DropdownMenuItem(
+                                        value: category,
+                                        child: Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 5.0),
+                                          child: Text(
+                                            category.name,
+                                            style: const TextStyle(
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.w500,
+                                            ),
+                                          ),
+                                        ),
+                                      );
+                                    }).toList(),
+                                    onChanged: (Category? newValue) {
+                                      setState(() {
+                                        selectedCategory = newValue!;
+                                      });
+                                    },
+                                  )
+                                : const Text("No Categories");
                           }
 
-                          return const Text("No Categories");
+                          return const Center(
+                            child: CircularProgressIndicator(
+                              color: kPrimaryColor,
+                            ),
+                          );
                         },
                       ),
                     ],
@@ -231,69 +252,47 @@ class _WholesaleScreenState extends State<WholesaleScreen> {
       floatingActionButton: FloatingActionButton(
         shape: const CircleBorder(),
         onPressed: () {
+          context.read<SellerBloc>().add(LoadSeller(id: widget.seller.id));
           Navigator.push(
             context,
-            CartScreen.route(seller: widget.seller),
+            CartScreen.route(sellerId: widget.seller.id),
           );
         },
         tooltip: 'My Cart',
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Icon(Icons.shopping_basket),
-            Text(
-              "${widget.seller.products.length}",
-              style: const TextStyle(
-                fontSize: 13,
-                fontWeight: FontWeight.w500,
+        child: BlocBuilder<CartBloc, CartState>(
+          builder: (context, state) {
+            if (state is LoadedCart) {
+              Cart cart = state.cart;
+
+              return Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Icon(Icons.shopping_basket),
+                  horizontalSpace(width: 3),
+                  Text(
+                    cart.cartItems.length.toString(),
+                    style: const TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
+              );
+            }
+
+            return const Center(
+              child: SizedBox(
+                width: 20,
+                height: 20,
+                child: CircularProgressIndicator(
+                  strokeWidth: 3,
+                ),
               ),
-            ),
-          ],
+            );
+          },
         ),
       ),
     );
   }
 }
-
-// List<Product> products = const [
-//   Product(
-//     id: "1bd8b296-3a41-471d-9fa3-0ab6ab692f0d",
-//     title: "Table Chair",
-//     imageUrl: "assets/images/fridge.jpg",
-//     description: null,
-//     quantity: 5,
-//     price: 5,
-//     authenticity: true,
-//     returnPolicy: true,
-//     warranty: true,
-//     categoryId: "b9ea294f-2776-441d-8d9f-dc2e1590b76c",
-//     colors: [],
-//   ),
-//   Product(
-//     id: "1bd8b296-3a41-471d-9fa3-0ab6ab692f0d",
-//     title: "Table Chair",
-//     imageUrl: null,
-//     description: null,
-//     quantity: 5,
-//     price: 5,
-//     authenticity: true,
-//     returnPolicy: true,
-//     warranty: true,
-//     categoryId: "b9ea294f-2776-441d-8d9f-dc2e1590b76c",
-//     colors: [],
-//   ),
-//   Product(
-//     id: "1bd8b296-3a41-471d-9fa3-0ab6ab692f0d",
-//     title: "Table Chair",
-//     imageUrl: "assets/images/fridge.jpg",
-//     description: null,
-//     quantity: 5,
-//     price: 5,
-//     authenticity: true,
-//     returnPolicy: true,
-//     warranty: true,
-//     categoryId: "b9ea294f-2776-441d-8d9f-dc2e1590b76c",
-//     colors: [],
-//   ),
-// ];

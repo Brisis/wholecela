@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:wholecela/business_logic/location_bloc/location_bloc.dart';
+import 'package:wholecela/business_logic/seller/seller_bloc.dart';
 import 'package:wholecela/business_logic/user_bloc/user_bloc.dart';
 import 'package:wholecela/core/config/constants.dart';
 import 'package:wholecela/data/models/location.dart';
@@ -12,16 +13,16 @@ import 'package:wholecela/presentation/widgets/avatar_image.dart';
 import 'package:wholecela/presentation/widgets/cart_card.dart';
 
 class CartScreen extends StatefulWidget {
-  final Seller seller;
-  static Route route({required Seller seller}) {
+  final String sellerId;
+  static Route route({required String sellerId}) {
     return MaterialPageRoute(
-      builder: (context) => CartScreen(seller: seller),
+      builder: (context) => CartScreen(sellerId: sellerId),
     );
   }
 
   const CartScreen({
     super.key,
-    required this.seller,
+    required this.sellerId,
   });
 
   @override
@@ -34,12 +35,15 @@ class _CartScreenState extends State<CartScreen> {
   late Location selectedLocation;
   late List<Location> locations;
 
+  late Seller seller;
+
   @override
   void initState() {
     super.initState();
     loggedUser = context.read<UserBloc>().state.user!;
     locations = context.read<LocationBloc>().state.locations!;
     selectedLocation = locations.first;
+    seller = context.read<SellerBloc>().state.seller!;
   }
 
   @override
@@ -67,11 +71,11 @@ class _CartScreenState extends State<CartScreen> {
             onPressed: () {
               Navigator.push(
                 context,
-                WholesaleScreen.route(seller: widget.seller),
+                WholesaleScreen.route(seller: seller),
               );
             },
             icon: AvatarImage(
-              imageUrl: widget.seller.imageUrl,
+              imageUrl: seller.imageUrl,
               isSeller: true,
             ),
           ),

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:wholecela/business_logic/seller/seller_bloc.dart';
+import 'package:wholecela/business_logic/cart_bloc/cart_bloc.dart';
 import 'package:wholecela/business_logic/user_bloc/user_bloc.dart';
 import 'package:wholecela/core/config/constants.dart';
-import 'package:wholecela/data/models/seller.dart';
+import 'package:wholecela/data/models/cart.dart';
 import 'package:wholecela/data/models/user.dart';
 import 'package:wholecela/presentation/screens/cart_screen.dart';
 import 'package:wholecela/presentation/screens/profile_screen.dart';
@@ -26,13 +26,13 @@ class CartCombinedScreen extends StatefulWidget {
 
 class _CartCombinedScreenState extends State<CartCombinedScreen> {
   late User loggedUser;
-  late List<Seller> sellers;
+  late List<Cart> carts;
 
   @override
   void initState() {
     super.initState();
     loggedUser = context.read<UserBloc>().state.user!;
-    sellers = context.read<SellerBloc>().state.sellers!;
+    carts = context.read<CartBloc>().state.carts!;
   }
 
   @override
@@ -70,48 +70,64 @@ class _CartCombinedScreenState extends State<CartCombinedScreen> {
         color: kPrimaryColor,
         child: Padding(
           padding: const EdgeInsets.all(15.0),
-          child: ListView(
-            children: [
-              ListView.builder(
-                shrinkWrap: true,
-                itemCount: 3,
-                itemBuilder: (context, index) {
-                  return GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        CartScreen.route(seller: sellers[0]),
-                      );
-                    },
-                    child: CartCombinedCard(
-                      seller: sellers[0],
+          child: BlocConsumer<CartBloc, CartState>(
+            listener: (context, state) {
+              // TODO: implement listener
+            },
+            builder: (context, state) {
+              if (state is LoadedCarts) {
+                List<Cart> carts = state.carts;
+                return ListView(
+                  children: [
+                    ListView.builder(
+                      shrinkWrap: true,
+                      itemCount: 3,
+                      itemBuilder: (context, index) {
+                        return GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              CartScreen.route(sellerId: carts[index].sellerId),
+                            );
+                          },
+                          child: CartCombinedCard(
+                            cart: carts[index],
+                          ),
+                        );
+                      },
                     ),
-                  );
-                },
-              ),
-              verticalSpace(height: 15),
-              Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    "Total Items : 23",
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
+                    verticalSpace(height: 15),
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          "Total Items : 23",
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        verticalSpace(height: 15),
+                        const Text(
+                          "\.00",
+                          style: TextStyle(
+                            fontSize: 28,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
                     ),
-                  ),
-                  verticalSpace(height: 15),
-                  const Text(
-                    "\$543.00",
-                    style: TextStyle(
-                      fontSize: 28,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ],
-              ),
-            ],
+                  ],
+                );
+              }
+
+              return const Center(
+                child: CircularProgressIndicator(
+                  color: kPrimaryColor,
+                ),
+              );
+            },
           ),
         ),
       ),

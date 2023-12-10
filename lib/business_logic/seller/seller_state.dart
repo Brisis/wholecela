@@ -47,12 +47,22 @@ class SellerStateError extends SellerState {
   List<Object> get props => [message!];
 }
 
-// Extract user from UserState
 extension GetSellers on SellerState {
   List<Seller>? get sellers {
     final cls = this;
     if (cls is LoadedSellers) {
       return cls.sellers;
+    } else {
+      return null;
+    }
+  }
+}
+
+extension GetSeller on SellerState {
+  Seller? get seller {
+    final cls = this;
+    if (cls is LoadedSeller) {
+      return cls.seller;
     } else {
       return null;
     }

@@ -1,9 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:wholecela/business_logic/cart_bloc/cart_bloc.dart';
 import 'package:wholecela/business_logic/location_bloc/location_bloc.dart';
 import 'package:wholecela/business_logic/seller/seller_bloc.dart';
 import 'package:wholecela/business_logic/user_bloc/user_bloc.dart';
+import 'package:wholecela/data/models/cart.dart';
 import 'package:wholecela/data/models/location.dart';
 import 'package:wholecela/data/models/seller.dart';
 import 'package:wholecela/data/models/user.dart';
@@ -30,7 +32,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   late User loggedUser;
 
-  late Location selectedLocation;
+  late Location? selectedLocation;
   late List<Location> locations;
 
   @override
@@ -39,7 +41,12 @@ class _HomeScreenState extends State<HomeScreen> {
     context.read<SellerBloc>().add(LoadSellers());
     loggedUser = context.read<UserBloc>().state.user!;
     locations = context.read<LocationBloc>().state.locations!;
-    selectedLocation = locations.first;
+    if (locations.isNotEmpty) {
+      selectedLocation = locations.first;
+    }
+    if (locations.isEmpty) {
+      selectedLocation = null;
+    }
   }
 
   TextEditingController searchController = TextEditingController();
@@ -106,37 +113,43 @@ class _HomeScreenState extends State<HomeScreen> {
                   BlocBuilder<LocationBloc, LocationState>(
                     builder: (context, state) {
                       if (state is LoadedLocations) {
-                        return DropdownButton(
-                          underline: const SizedBox.shrink(),
-                          focusColor: Colors.white,
-                          borderRadius: BorderRadius.circular(10),
-                          value: selectedLocation,
-                          icon: const Icon(Icons.keyboard_arrow_down),
-                          items: locations.map((Location location) {
-                            return DropdownMenuItem(
-                              value: location,
-                              child: Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 5.0),
-                                child: Text(
-                                  location.name,
-                                  style: const TextStyle(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                              ),
-                            );
-                          }).toList(),
-                          onChanged: (Location? newValue) {
-                            setState(() {
-                              selectedLocation = newValue!;
-                            });
-                          },
-                        );
+                        return selectedLocation != null
+                            ? DropdownButton(
+                                underline: const SizedBox.shrink(),
+                                focusColor: Colors.white,
+                                borderRadius: BorderRadius.circular(10),
+                                value: selectedLocation,
+                                icon: const Icon(Icons.keyboard_arrow_down),
+                                items: locations.map((Location location) {
+                                  return DropdownMenuItem(
+                                    value: location,
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 5.0),
+                                      child: Text(
+                                        location.name,
+                                        style: const TextStyle(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                      ),
+                                    ),
+                                  );
+                                }).toList(),
+                                onChanged: (Location? newValue) {
+                                  setState(() {
+                                    selectedLocation = newValue!;
+                                  });
+                                },
+                              )
+                            : const Text("No locations");
                       }
 
-                      return const Text("No locations");
+                      return const Center(
+                        child: CircularProgressIndicator(
+                          color: kPrimaryColor,
+                        ),
+                      );
                     },
                   ),
                 ],
@@ -185,19 +198,38 @@ class _HomeScreenState extends State<HomeScreen> {
           );
         },
         tooltip: 'My Cart',
-        child: const Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Icon(Icons.shopping_basket),
-            Text(
-              "12",
-              style: TextStyle(
-                fontSize: 13,
-                fontWeight: FontWeight.w500,
+        child: BlocBuilder<CartBloc, CartState>(
+          builder: (context, state) {
+            if (state is LoadedCarts) {
+              List<Cart> carts = state.carts;
+
+              return Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Icon(Icons.shopping_basket),
+                  horizontalSpace(width: 3),
+                  Text(
+                    carts.length.toString(),
+                    style: const TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
+              );
+            }
+
+            return const Center(
+              child: SizedBox(
+                width: 20,
+                height: 20,
+                child: CircularProgressIndicator(
+                  strokeWidth: 3,
+                ),
               ),
-            ),
-          ],
+            );
+          },
         ),
       ),
     );

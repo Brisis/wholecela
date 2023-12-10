@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:wholecela/business_logic/seller/seller_bloc.dart';
 import 'package:wholecela/core/config/constants.dart';
-import 'package:wholecela/data/models/seller.dart';
+import 'package:wholecela/data/models/cart.dart';
 import 'package:wholecela/presentation/screens/cart_screen.dart';
 
 class CartCombinedCard extends StatefulWidget {
-  final Seller seller;
+  final Cart cart;
   const CartCombinedCard({
     super.key,
-    required this.seller,
+    required this.cart,
   });
 
   @override
@@ -86,9 +88,12 @@ class _CartCombinedCardState extends State<CartCombinedCard> {
               children: [
                 IconButton(
                   onPressed: () {
+                    context
+                        .read<SellerBloc>()
+                        .add(LoadSeller(id: widget.cart.sellerId));
                     Navigator.push(
                       context,
-                      CartScreen.route(seller: widget.seller),
+                      CartScreen.route(sellerId: widget.cart.sellerId),
                     );
                   },
                   icon: const Icon(Icons.shopping_cart),
