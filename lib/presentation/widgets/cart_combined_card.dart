@@ -5,19 +5,12 @@ import 'package:wholecela/core/config/constants.dart';
 import 'package:wholecela/data/models/cart.dart';
 import 'package:wholecela/presentation/screens/cart_screen.dart';
 
-class CartCombinedCard extends StatefulWidget {
+class CartCombinedCard extends StatelessWidget {
   final Cart cart;
   const CartCombinedCard({
     super.key,
     required this.cart,
   });
-
-  @override
-  State<CartCombinedCard> createState() => _CartCombinedCardState();
-}
-
-class _CartCombinedCardState extends State<CartCombinedCard> {
-  int cartValue = 5;
 
   @override
   Widget build(BuildContext context) {
@@ -43,11 +36,17 @@ class _CartCombinedCardState extends State<CartCombinedCard> {
                     width: 50,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(5),
-                      image: const DecorationImage(
-                        image: AssetImage(
-                          "assets/images/metro.jpg",
-                        ),
-                      ),
+                      image: cart.seller.imageUrl != null
+                          ? DecorationImage(
+                              //image: AssetImage(product.imageUrl!),
+                              image: NetworkImage(
+                                  "${AppUrls.SERVER_URL}/uploads/thumbnails/${cart.seller.imageUrl}"),
+                              fit: BoxFit.cover,
+                            )
+                          : const DecorationImage(
+                              image: AssetImage("assets/images/shop.png"),
+                              fit: BoxFit.cover,
+                            ),
                     ),
                   ),
                   horizontalSpace(
@@ -58,9 +57,9 @@ class _CartCombinedCardState extends State<CartCombinedCard> {
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text(
-                          "Metropeach Brownee",
-                          style: TextStyle(
+                        Text(
+                          cart.seller.name,
+                          style: const TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.bold,
                           ),
@@ -71,7 +70,7 @@ class _CartCombinedCardState extends State<CartCombinedCard> {
                           height: 10,
                         ),
                         Text(
-                          "$cartValue items",
+                          "${cart.cartItems.length} items",
                           style: const TextStyle(
                             fontSize: 12,
                           ),
@@ -90,10 +89,10 @@ class _CartCombinedCardState extends State<CartCombinedCard> {
                   onPressed: () {
                     context
                         .read<SellerBloc>()
-                        .add(LoadSeller(id: widget.cart.sellerId));
+                        .add(LoadSeller(id: cart.sellerId));
                     Navigator.push(
                       context,
-                      CartScreen.route(sellerId: widget.cart.sellerId),
+                      CartScreen.route(sellerId: cart.sellerId),
                     );
                   },
                   icon: const Icon(Icons.shopping_cart),

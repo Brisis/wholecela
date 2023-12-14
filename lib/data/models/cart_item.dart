@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:wholecela/core/extensions/convert_double.dart';
+
 class CartItem {
   final String id;
   final int quantity;
@@ -49,7 +51,7 @@ class CartItem {
 class CartItemProduct {
   final String id;
   final String title;
-  final int price;
+  final double price;
   final String? imageUrl;
 
   CartItemProduct({
@@ -62,7 +64,7 @@ class CartItemProduct {
   CartItemProduct copyWith({
     String? id,
     String? title,
-    int? price,
+    double? price,
     String? imageUrl,
   }) =>
       CartItemProduct(
@@ -81,7 +83,7 @@ class CartItemProduct {
       CartItemProduct(
         id: json["id"],
         title: json["title"],
-        price: json["price"],
+        price: toDouble(json["price"]),
         imageUrl: json["imageUrl"] == null ? null : json["imageUrl"] as String,
       );
 

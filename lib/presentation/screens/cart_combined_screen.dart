@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:wholecela/business_logic/cart_bloc/cart_bloc.dart';
 import 'package:wholecela/business_logic/user_bloc/user_bloc.dart';
 import 'package:wholecela/core/config/constants.dart';
+import 'package:wholecela/core/extensions/price_formatter.dart';
 import 'package:wholecela/data/models/cart.dart';
 import 'package:wholecela/data/models/user.dart';
 import 'package:wholecela/presentation/screens/cart_screen.dart';
@@ -26,13 +27,11 @@ class CartCombinedScreen extends StatefulWidget {
 
 class _CartCombinedScreenState extends State<CartCombinedScreen> {
   late User loggedUser;
-  late List<Cart> carts;
 
   @override
   void initState() {
     super.initState();
     loggedUser = context.read<UserBloc>().state.user!;
-    carts = context.read<CartBloc>().state.carts!;
   }
 
   @override
@@ -45,7 +44,7 @@ class _CartCombinedScreenState extends State<CartCombinedScreen> {
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: const Text(
-          "My Cart",
+          "My Carts",
           style: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.bold,
@@ -70,18 +69,28 @@ class _CartCombinedScreenState extends State<CartCombinedScreen> {
         color: kPrimaryColor,
         child: Padding(
           padding: const EdgeInsets.all(15.0),
-          child: BlocConsumer<CartBloc, CartState>(
-            listener: (context, state) {
-              // TODO: implement listener
-            },
+          child: BlocBuilder<CartBloc, CartState>(
+            buildWhen: (previous, current) => current.carts != null,
             builder: (context, state) {
               if (state is LoadedCarts) {
                 List<Cart> carts = state.carts;
+
+                final double total =
+                    carts.fold(0, (sum, item) => sum + item.total);
+
                 return ListView(
                   children: [
+                    Text(
+                      "Total Carts : ${carts.length}",
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    verticalSpace(height: 15),
                     ListView.builder(
                       shrinkWrap: true,
-                      itemCount: 3,
+                      itemCount: carts.length,
                       itemBuilder: (context, index) {
                         return GestureDetector(
                           onTap: () {
@@ -97,21 +106,20 @@ class _CartCombinedScreenState extends State<CartCombinedScreen> {
                       },
                     ),
                     verticalSpace(height: 15),
-                    Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         const Text(
-                          "Total Items : 23",
+                          "Total Cost: ",
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w500,
                           ),
                         ),
-                        verticalSpace(height: 15),
-                        const Text(
-                          "\.00",
-                          style: TextStyle(
+                        Text(
+                          formatPrice(total),
+                          style: const TextStyle(
                             fontSize: 28,
                             fontWeight: FontWeight.bold,
                           ),

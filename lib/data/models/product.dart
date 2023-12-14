@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:equatable/equatable.dart';
+import 'package:wholecela/core/extensions/convert_double.dart';
 import 'package:wholecela/data/models/color.dart';
 
 class Product extends Equatable {
@@ -79,12 +80,4 @@ class Product extends Equatable {
 
   @override
   bool? get stringify => true;
-}
-
-double toDouble(dynamic value) {
-  if (value is int) {
-    return double.parse(value.toString());
-  } else {
-    return value;
-  }
 }

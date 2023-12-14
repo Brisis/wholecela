@@ -5,6 +5,24 @@ class CartItemRepository {
   final CartItemProvider cartItemProvider;
   const CartItemRepository({required this.cartItemProvider});
 
+  Future<List<CartItem>> addCartItem({
+    required String cartId,
+    required String productId,
+    required int quantity,
+  }) async {
+    final response = await cartItemProvider.addCartItem(
+      cartId: cartId,
+      productId: productId,
+      quantity: quantity,
+    );
+
+    return (response as List<dynamic>)
+        .map(
+          (i) => CartItem.fromJson(i),
+        )
+        .toList();
+  }
+
   Future<List<CartItem>> getCartItems({required String cartId}) async {
     final response = await cartItemProvider.getCartItems(cartId: cartId);
 

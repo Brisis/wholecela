@@ -1,11 +1,14 @@
 import 'dart:convert';
 
+import 'package:wholecela/core/extensions/convert_double.dart';
+
 class Cart {
   final String id;
   final String userId;
   final String sellerId;
   final List<CartItemModel> cartItems;
   final CartSeller seller;
+  final double total;
 
   Cart({
     required this.id,
@@ -13,6 +16,7 @@ class Cart {
     required this.sellerId,
     required this.cartItems,
     required this.seller,
+    required this.total,
   });
 
   Cart copyWith({
@@ -21,6 +25,7 @@ class Cart {
     String? sellerId,
     List<CartItemModel>? cartItems,
     CartSeller? seller,
+    double? total,
   }) =>
       Cart(
         id: id ?? this.id,
@@ -28,6 +33,7 @@ class Cart {
         sellerId: sellerId ?? this.sellerId,
         cartItems: cartItems ?? this.cartItems,
         seller: seller ?? this.seller,
+        total: total ?? this.total,
       );
 
   factory Cart.fromRawJson(String str) => Cart.fromJson(json.decode(str));
@@ -41,6 +47,7 @@ class Cart {
         cartItems: List<CartItemModel>.from(
             json["cartItems"].map((x) => CartItemModel.fromJson(x))),
         seller: CartSeller.fromJson(json["seller"]),
+        total: toDouble(json["total"]),
       );
 
   Map<String, dynamic> toJson() => {
@@ -49,6 +56,7 @@ class Cart {
         "sellerId": sellerId,
         "cartItems": List<dynamic>.from(cartItems.map((x) => x.toJson())),
         "seller": seller.toJson(),
+        "total": total,
       };
 }
 

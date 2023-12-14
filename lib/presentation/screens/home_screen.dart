@@ -39,7 +39,9 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     context.read<SellerBloc>().add(LoadSellers());
+
     loggedUser = context.read<UserBloc>().state.user!;
+    context.read<CartBloc>().add(LoadCarts(userId: loggedUser.id));
     locations = context.read<LocationBloc>().state.locations!;
     if (locations.isNotEmpty) {
       selectedLocation = locations.first;
@@ -84,6 +86,7 @@ class _HomeScreenState extends State<HomeScreen> {
         onRefresh: () async {
           context.read<LocationBloc>().add(LoadLocations());
           context.read<SellerBloc>().add(LoadSellers());
+          context.read<CartBloc>().add(LoadCarts(userId: loggedUser.id));
         },
         color: kPrimaryColor,
         child: Padding(
@@ -158,16 +161,13 @@ class _HomeScreenState extends State<HomeScreen> {
                 height: 15,
               ),
               Expanded(
-                child: BlocConsumer<SellerBloc, SellerState>(
-                  listener: (context, state) {
-                    if (state is LoadedSeller) {
-                      context.read<SellerBloc>().add(LoadSellers());
-                    }
+                child: BlocBuilder<SellerBloc, SellerState>(
+                  buildWhen: (previous, current) {
+                    return current.sellers != null;
                   },
                   builder: (context, state) {
                     if (state is LoadedSellers) {
                       List<Seller> sellers = state.sellers;
-                      // List<Seller> sellers = state.sellers;
                       return ListView.builder(
                           itemCount: sellers.length,
                           itemBuilder: (context, index) {
@@ -189,21 +189,25 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        shape: const CircleBorder(),
-        onPressed: () {
-          Navigator.push(
-            context,
-            CartCombinedScreen.route(),
-          );
-        },
-        tooltip: 'My Cart',
-        child: BlocBuilder<CartBloc, CartState>(
-          builder: (context, state) {
-            if (state is LoadedCarts) {
-              List<Cart> carts = state.carts;
+      floatingActionButton: BlocBuilder<CartBloc, CartState>(
+        buildWhen: (previous, current) => current.carts != null,
+        builder: (context, state) {
+          if (state is LoadedCarts) {
+            List<Cart> carts = state.carts;
 
-              return Row(
+            return FloatingActionButton(
+              shape: const CircleBorder(),
+              onPressed: () {
+                context.read<CartBloc>().add(LoadCarts(
+                      userId: loggedUser.id,
+                    ));
+                Navigator.push(
+                  context,
+                  CartCombinedScreen.route(),
+                );
+              },
+              tooltip: 'My Cart',
+              child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -217,10 +221,27 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ),
                 ],
-              );
-            }
+              ),
+            );
+          }
 
-            return const Center(
+          if (state is CartStateError) {
+            return const FloatingActionButton(
+              shape: CircleBorder(),
+              onPressed: null,
+              tooltip: 'My Cart',
+              child: Icon(
+                Icons.shopping_basket,
+                color: kBlackFaded,
+              ),
+            );
+          }
+
+          return const FloatingActionButton(
+            shape: CircleBorder(),
+            onPressed: null,
+            tooltip: 'My Cart',
+            child: Center(
               child: SizedBox(
                 width: 20,
                 height: 20,
@@ -228,9 +249,9 @@ class _HomeScreenState extends State<HomeScreen> {
                   strokeWidth: 3,
                 ),
               ),
-            );
-          },
-        ),
+            ),
+          );
+        },
       ),
     );
   }

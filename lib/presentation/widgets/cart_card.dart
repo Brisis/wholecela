@@ -1,31 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:wholecela/core/config/constants.dart';
+import 'package:wholecela/data/models/cart_item.dart';
 
-class CartCard extends StatefulWidget {
-  const CartCard({super.key});
-
-  @override
-  State<CartCard> createState() => _CartCardState();
-}
-
-class _CartCardState extends State<CartCard> {
-  int cartValue = 2;
-
-  void _incrementValue() {
-    if (cartValue < 10) {
-      setState(() {
-        cartValue++;
-      });
-    }
-  }
-
-  void _decrementValue() {
-    if (cartValue > 1) {
-      setState(() {
-        cartValue--;
-      });
-    }
-  }
+class CartCard extends StatelessWidget {
+  final CartItem cartItem;
+  const CartCard({
+    super.key,
+    required this.cartItem,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -51,11 +33,17 @@ class _CartCardState extends State<CartCard> {
                     width: 50,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(5),
-                      image: const DecorationImage(
-                        image: AssetImage(
-                          "assets/images/product.jpg",
-                        ),
-                      ),
+                      image: cartItem.product.imageUrl != null
+                          ? DecorationImage(
+                              //image: AssetImage(product.imageUrl!),
+                              image: NetworkImage(
+                                  "${AppUrls.SERVER_URL}/thumbnails/${cartItem.product.imageUrl}"),
+                              fit: BoxFit.cover,
+                            )
+                          : const DecorationImage(
+                              image: AssetImage("assets/images/product.jpg"),
+                              fit: BoxFit.cover,
+                            ),
                     ),
                   ),
                   horizontalSpace(
@@ -66,9 +54,9 @@ class _CartCardState extends State<CartCard> {
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text(
-                          "Product name",
-                          style: TextStyle(
+                        Text(
+                          cartItem.product.title,
+                          style: const TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.bold,
                           ),
@@ -79,7 +67,7 @@ class _CartCardState extends State<CartCard> {
                           height: 10,
                         ),
                         Text(
-                          "$cartValue items",
+                          "${cartItem.quantity} items",
                           style: const TextStyle(
                             fontSize: 12,
                           ),
@@ -95,12 +83,12 @@ class _CartCardState extends State<CartCard> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 IconButton(
-                  onPressed: _decrementValue,
+                  onPressed: () {},
                   icon: const Icon(Icons.remove),
                 ),
                 horizontalSpace(),
                 IconButton(
-                  onPressed: _incrementValue,
+                  onPressed: () {},
                   icon: const Icon(Icons.add),
                 ),
                 horizontalSpace(),

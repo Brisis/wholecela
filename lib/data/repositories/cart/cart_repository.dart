@@ -5,6 +5,18 @@ class CartRepository {
   final CartProvider cartProvider;
   const CartRepository({required this.cartProvider});
 
+  Future<Cart> createCart({
+    required String userId,
+    required String sellerId,
+  }) async {
+    final response = await cartProvider.createCart(
+      userId: userId,
+      sellerId: sellerId,
+    );
+
+    return Cart.fromJson(response);
+  }
+
   Future<List<Cart>> getCarts({required String userId}) async {
     final response = await cartProvider.getCarts(userId: userId);
 

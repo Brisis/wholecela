@@ -66,7 +66,7 @@ class AppBlocs extends StatelessWidget {
         BlocProvider(
           create: (context) => SellerBloc(
             sellerRepository: RepositoryProvider.of<SellerRepository>(context),
-          )..add(LoadSellers()),
+          ),
           lazy: false,
         ),
         BlocProvider(

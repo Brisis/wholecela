@@ -12,6 +12,24 @@ class CartBloc extends Bloc<CartEvent, CartState> {
   CartBloc({
     required this.cartRepository,
   }) : super(CartStateInitial()) {
+    on<CreateCart>((event, emit) async {
+      emit(CartStateLoading());
+      try {
+        final cart = await cartRepository.createCart(
+          userId: event.userId,
+          sellerId: event.sellerId,
+        );
+
+        emit(LoadedCart(cart: cart));
+      } on AppException catch (e) {
+        emit(
+          CartStateError(
+            message: e,
+          ),
+        );
+      }
+    });
+
     on<LoadCarts>((event, emit) async {
       emit(CartStateLoading());
       try {

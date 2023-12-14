@@ -127,7 +127,7 @@ class MenuDrawer extends StatelessWidget {
                   const Icon(Icons.shopping_basket),
                   horizontalSpace(),
                   const Text(
-                    "My Cart",
+                    "My Carts",
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w400,

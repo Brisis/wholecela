@@ -19,7 +19,7 @@ class WholeSaleCard extends StatelessWidget {
         onTap: () {
           Navigator.push(
             context,
-            WholesaleScreen.route(seller: seller),
+            WholesaleScreen.route(sellerId: seller.id),
           );
         },
         child: Container(
