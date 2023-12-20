@@ -32,4 +32,16 @@ class CartItemRepository {
         )
         .toList();
   }
+
+  Future<List<CartItem>> deleteCartItem({required String cartItemId}) async {
+    final response = await cartItemProvider.deleteCartItem(
+      cartItemId: cartItemId,
+    );
+
+    return (response as List<dynamic>)
+        .map(
+          (i) => CartItem.fromJson(i),
+        )
+        .toList();
+  }
 }

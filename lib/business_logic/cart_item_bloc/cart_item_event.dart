@@ -19,6 +19,14 @@ class AddCartItem extends CartItemEvent {
   });
 }
 
+class DeleteCartItem extends CartItemEvent {
+  final String cartItemId;
+
+  const DeleteCartItem({
+    required this.cartItemId,
+  });
+}
+
 class LoadCartItems extends CartItemEvent {
   final String cartId;
 

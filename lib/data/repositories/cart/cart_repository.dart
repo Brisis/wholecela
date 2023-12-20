@@ -5,7 +5,7 @@ class CartRepository {
   final CartProvider cartProvider;
   const CartRepository({required this.cartProvider});
 
-  Future<Cart> createCart({
+  Future<dynamic> createCart({
     required String userId,
     required String sellerId,
   }) async {
@@ -14,7 +14,9 @@ class CartRepository {
       sellerId: sellerId,
     );
 
-    return Cart.fromJson(response);
+    //print(response);
+
+    return response;
   }
 
   Future<List<Cart>> getCarts({required String userId}) async {
@@ -37,5 +39,17 @@ class CartRepository {
     );
 
     return Cart.fromJson(response);
+  }
+
+  Future<List<Cart>> deleteCart({required String cartId}) async {
+    final response = await cartProvider.deleteCart(
+      cartId: cartId,
+    );
+
+    return (response as List<dynamic>)
+        .map(
+          (i) => Cart.fromJson(i),
+        )
+        .toList();
   }
 }

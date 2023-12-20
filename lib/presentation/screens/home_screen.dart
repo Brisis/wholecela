@@ -32,23 +32,14 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   late User loggedUser;
 
-  late Location? selectedLocation;
-  late List<Location> locations;
-
   @override
   void initState() {
     super.initState();
     context.read<SellerBloc>().add(LoadSellers());
+    context.read<LocationBloc>().add(LoadLocations());
 
     loggedUser = context.read<UserBloc>().state.user!;
     context.read<CartBloc>().add(LoadCarts(userId: loggedUser.id));
-    locations = context.read<LocationBloc>().state.locations!;
-    if (locations.isNotEmpty) {
-      selectedLocation = locations.first;
-    }
-    if (locations.isEmpty) {
-      selectedLocation = null;
-    }
   }
 
   TextEditingController searchController = TextEditingController();
@@ -116,6 +107,16 @@ class _HomeScreenState extends State<HomeScreen> {
                   BlocBuilder<LocationBloc, LocationState>(
                     builder: (context, state) {
                       if (state is LoadedLocations) {
+                        List<Location> locations = state.locations;
+
+                        Location? selectedLocation;
+                        if (locations.isNotEmpty) {
+                          selectedLocation = locations.first;
+                        }
+                        if (locations.isEmpty) {
+                          selectedLocation = null;
+                        }
+
                         return selectedLocation != null
                             ? DropdownButton(
                                 underline: const SizedBox.shrink(),
@@ -149,8 +150,13 @@ class _HomeScreenState extends State<HomeScreen> {
                       }
 
                       return const Center(
-                        child: CircularProgressIndicator(
-                          color: kPrimaryColor,
+                        child: SizedBox(
+                          width: 25,
+                          height: 25,
+                          child: CircularProgressIndicator(
+                            color: kPrimaryColor,
+                            strokeWidth: 3,
+                          ),
                         ),
                       );
                     },

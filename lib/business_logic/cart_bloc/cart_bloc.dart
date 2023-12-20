@@ -15,12 +15,29 @@ class CartBloc extends Bloc<CartEvent, CartState> {
     on<CreateCart>((event, emit) async {
       emit(CartStateLoading());
       try {
-        final cart = await cartRepository.createCart(
+        final cartResponse = await cartRepository.createCart(
           userId: event.userId,
           sellerId: event.sellerId,
         );
 
-        emit(LoadedCart(cart: cart));
+        emit(CartStateCreated(cartId: cartResponse["id"]));
+      } on AppException catch (e) {
+        emit(
+          CartStateError(
+            message: e,
+          ),
+        );
+      }
+    });
+
+    on<DeleteCart>((event, emit) async {
+      emit(CartStateLoading());
+      try {
+        final carts = await cartRepository.deleteCart(
+          cartId: event.cartId,
+        );
+
+        emit(LoadedCarts(carts: carts));
       } on AppException catch (e) {
         emit(
           CartStateError(

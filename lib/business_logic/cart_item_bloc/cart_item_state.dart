@@ -9,7 +9,11 @@ abstract class CartItemState extends Equatable {
 
 final class CartItemStateInitial extends CartItemState {}
 
-class CartItemStateLoading extends CartItemState {}
+final class CartItemStateLoading extends CartItemState {}
+
+final class CartItemStateDeleted extends CartItemState {}
+
+final class CartItemStateChanged extends CartItemState {}
 
 class LoadedCartItems extends CartItemState {
   final List<CartItem> cartItems;

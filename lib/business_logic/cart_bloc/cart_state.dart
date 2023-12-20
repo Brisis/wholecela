@@ -11,6 +11,12 @@ final class CartStateInitial extends CartState {}
 
 class CartStateLoading extends CartState {}
 
+class CartStateCreated extends CartState {
+  final String cartId;
+
+  const CartStateCreated({required this.cartId});
+}
+
 class LoadedCart extends CartState {
   final Cart cart;
   const LoadedCart({

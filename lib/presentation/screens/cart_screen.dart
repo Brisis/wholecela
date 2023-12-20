@@ -112,176 +112,240 @@ class _CartScreenState extends State<CartScreen> {
                           .add(LoadCartItems(cartId: cart.id));
 
                       List<CartItemModel> cartItems = cart.cartItems;
-                      return ListView(
-                        children: [
-                          Text(
-                            "Total Items : ${cartItems.length}",
-                            style: const TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                          verticalSpace(height: 15),
-                          BlocBuilder<CartItemBloc, CartItemState>(
-                            builder: (context, state) {
-                              if (state is LoadedCartItems) {
-                                List<CartItem> cartItems = state.cartItems;
-                                return ListView.builder(
-                                  shrinkWrap: true,
-                                  itemCount: cartItems.length,
-                                  itemBuilder: (context, index) {
-                                    return GestureDetector(
-                                      onTap: () {
-                                        // Navigator.push(
-                                        //   context,
-                                        //   ProductScreen.route(
-                                        //     seller: widget.seller,
-                                        //     productId: productId,
-                                        //   ),
-                                        // );
-                                      },
-                                      child: CartCard(
-                                        cartItem: cartItems[index],
-                                      ),
-                                    );
-                                  },
-                                );
-                              }
+                      if (cartItems.isNotEmpty) {
+                        return BlocConsumer<CartItemBloc, CartItemState>(
+                          listener: (context, state) {
+                            if (state is CartItemStateDeleted) {
+                              context.read<CartBloc>().add(LoadCart(
+                                    userId: loggedUser.id,
+                                    sellerId: seller.id,
+                                  ));
+                            }
+                            if (state is CartItemStateChanged) {
+                              context.read<CartBloc>().add(LoadCart(
+                                    userId: loggedUser.id,
+                                    sellerId: seller.id,
+                                  ));
+                            }
+                          },
+                          builder: (context, state) {
+                            if (state is LoadedCartItems) {
+                              List<CartItem> cartItems = state.cartItems;
 
-                              return const Center(
-                                child: CircularProgressIndicator(
-                                  color: kPrimaryColor,
-                                ),
-                              );
-                            },
-                          ),
-                          verticalSpace(height: 15),
-                          Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                crossAxisAlignment: CrossAxisAlignment.center,
+                              return ListView(
                                 children: [
-                                  const Text(
-                                    "Total Cost: ",
-                                    style: TextStyle(
+                                  Text(
+                                    "Total Items : ${cartItems.length}",
+                                    style: const TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.w500,
                                     ),
                                   ),
-                                  Text(
-                                    formatPrice(cart.total),
-                                    style: const TextStyle(
-                                      fontSize: 28,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              verticalSpace(height: 15),
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  const Text(
-                                    "Drop Location: ",
-                                    style: TextStyle(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                                  BlocBuilder<LocationBloc, LocationState>(
-                                    builder: (context, state) {
-                                      if (state is LoadedLocations) {
-                                        return selectedLocation != null
-                                            ? DropdownButton(
-                                                underline:
-                                                    const SizedBox.shrink(),
-                                                focusColor: Colors.white,
-                                                borderRadius:
-                                                    BorderRadius.circular(10),
-                                                value: selectedLocation,
-                                                icon: const Icon(
-                                                    Icons.keyboard_arrow_down),
-                                                items: locations
-                                                    .map((Location location) {
-                                                  return DropdownMenuItem(
-                                                    value: location,
-                                                    child: Padding(
-                                                      padding: const EdgeInsets
-                                                              .symmetric(
-                                                          horizontal: 5.0),
-                                                      child: Text(
-                                                        location.name,
-                                                        style: const TextStyle(
-                                                          fontSize: 14,
-                                                          fontWeight:
-                                                              FontWeight.w500,
-                                                        ),
-                                                      ),
-                                                    ),
-                                                  );
-                                                }).toList(),
-                                                onChanged:
-                                                    (Location? newValue) {
-                                                  setState(() {
-                                                    selectedLocation =
-                                                        newValue!;
-                                                  });
-                                                },
-                                              )
-                                            : const Text("No locations");
-                                      }
-
-                                      return const Center(
-                                        child: CircularProgressIndicator(
-                                          color: kPrimaryColor,
+                                  verticalSpace(height: 15),
+                                  ListView.builder(
+                                    shrinkWrap: true,
+                                    itemCount: cartItems.length,
+                                    itemBuilder: (context, index) {
+                                      return GestureDetector(
+                                        onTap: () {
+                                          // Navigator.push(
+                                          //   context,
+                                          //   ProductScreen.route(
+                                          //     seller: widget.seller,
+                                          //     productId: productId,
+                                          //   ),
+                                          // );
+                                        },
+                                        child: CartCard(
+                                          cartItem: cartItems[index],
                                         ),
                                       );
                                     },
                                   ),
-                                ],
-                              ),
-                              verticalSpace(
-                                height: 30,
-                              ),
-                              Container(
-                                padding: const EdgeInsets.all(5),
-                                decoration: BoxDecoration(
-                                  color: Colors.orangeAccent,
-                                  borderRadius: BorderRadius.circular(5),
-                                ),
-                                child: const Text(
-                                  "Note: 3% delivery charge",
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                              ),
-                              verticalSpace(
-                                height: 30,
-                              ),
-                              Row(
-                                children: [
-                                  Expanded(
-                                    child: ElevatedButton(
-                                      onPressed: () {
-                                        Navigator.push(
-                                          context,
-                                          CheckoutScreen.route(),
-                                        );
-                                      },
-                                      child: const Text(
-                                        "Make Payment",
+                                  verticalSpace(height: 15),
+                                  Column(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                        children: [
+                                          const Text(
+                                            "Total Cost: ",
+                                            style: TextStyle(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.w500,
+                                            ),
+                                          ),
+                                          Text(
+                                            formatPrice(cart.total),
+                                            style: const TextStyle(
+                                              fontSize: 28,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                        ],
                                       ),
-                                    ),
+                                      verticalSpace(height: 15),
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                        children: [
+                                          const Text(
+                                            "Drop Location: ",
+                                            style: TextStyle(
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.w500,
+                                            ),
+                                          ),
+                                          BlocBuilder<LocationBloc,
+                                              LocationState>(
+                                            builder: (context, state) {
+                                              if (state is LoadedLocations) {
+                                                return selectedLocation != null
+                                                    ? DropdownButton(
+                                                        underline:
+                                                            const SizedBox
+                                                                .shrink(),
+                                                        focusColor:
+                                                            Colors.white,
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(10),
+                                                        value: selectedLocation,
+                                                        icon: const Icon(Icons
+                                                            .keyboard_arrow_down),
+                                                        items: locations.map(
+                                                            (Location
+                                                                location) {
+                                                          return DropdownMenuItem(
+                                                            value: location,
+                                                            child: Padding(
+                                                              padding: const EdgeInsets
+                                                                      .symmetric(
+                                                                  horizontal:
+                                                                      5.0),
+                                                              child: Text(
+                                                                location.name,
+                                                                style:
+                                                                    const TextStyle(
+                                                                  fontSize: 14,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w500,
+                                                                ),
+                                                              ),
+                                                            ),
+                                                          );
+                                                        }).toList(),
+                                                        onChanged: (Location?
+                                                            newValue) {
+                                                          setState(() {
+                                                            selectedLocation =
+                                                                newValue!;
+                                                          });
+                                                        },
+                                                      )
+                                                    : const Text(
+                                                        "No locations");
+                                              }
+
+                                              return const Center(
+                                                child:
+                                                    CircularProgressIndicator(
+                                                  color: kPrimaryColor,
+                                                ),
+                                              );
+                                            },
+                                          ),
+                                        ],
+                                      ),
+                                      verticalSpace(
+                                        height: 30,
+                                      ),
+                                      Container(
+                                        padding: const EdgeInsets.all(5),
+                                        decoration: BoxDecoration(
+                                          color: Colors.orangeAccent,
+                                          borderRadius:
+                                              BorderRadius.circular(5),
+                                        ),
+                                        child: const Text(
+                                          "Note: 3% delivery charge",
+                                          style: TextStyle(
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                        ),
+                                      ),
+                                      verticalSpace(
+                                        height: 30,
+                                      ),
+                                      Row(
+                                        children: [
+                                          Expanded(
+                                            child: ElevatedButton(
+                                              onPressed: () {
+                                                Navigator.push(
+                                                  context,
+                                                  CheckoutScreen.route(),
+                                                );
+                                              },
+                                              child: const Text(
+                                                "Make Payment",
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
                                   ),
                                 ],
+                              );
+                            }
+
+                            return const Center(
+                              child: CircularProgressIndicator(
+                                color: kPrimaryColor,
+                              ),
+                            );
+                          },
+                        );
+                      }
+
+                      return Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          const Text(
+                            "Your cart is Empty",
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                          verticalSpace(height: 15),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    Navigator.push(
+                                      context,
+                                      WholesaleScreen.route(
+                                          sellerId: seller.id),
+                                    );
+                                  },
+                                  child: const Text(
+                                    "Go Shopping",
+                                  ),
+                                ),
                               ),
                             ],
                           ),
@@ -289,24 +353,72 @@ class _CartScreenState extends State<CartScreen> {
                       );
                     }
 
-                    return const Center(
-                      child: CircularProgressIndicator(
-                        color: kPrimaryColor,
-                      ),
+                    if (state is CartStateLoading) {
+                      return const Center(
+                        child: CircularProgressIndicator(
+                          color: kPrimaryColor,
+                        ),
+                      );
+                    }
+
+                    return Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        const Text(
+                          "Your cart is Empty",
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        verticalSpace(height: 15),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: ElevatedButton(
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    WholesaleScreen.route(sellerId: seller.id),
+                                  );
+                                },
+                                child: const Text(
+                                  "Go Shopping",
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
                     );
                   },
                 ),
               ),
             ),
-            floatingActionButton: FloatingActionButton(
-              shape: const CircleBorder(),
-              onPressed: () {},
-              tooltip: 'Empty Cart',
-              child: const Icon(
-                Icons.delete,
-                color: kWarningColor,
-                size: kIconLargeSize,
-              ),
+            floatingActionButton: BlocBuilder<CartBloc, CartState>(
+              builder: (context, state) {
+                if (state is LoadedCart) {
+                  if (state.cart.cartItems.isNotEmpty) {
+                    return FloatingActionButton(
+                      shape: const CircleBorder(),
+                      onPressed: () {
+                        context
+                            .read<CartBloc>()
+                            .add(DeleteCart(cartId: state.cart.id));
+                      },
+                      tooltip: 'Empty Cart',
+                      child: const Icon(
+                        Icons.delete,
+                        color: kWarningColor,
+                        size: kIconLargeSize,
+                      ),
+                    );
+                  }
+                }
+
+                return const SizedBox.shrink();
+              },
             ),
           );
         }

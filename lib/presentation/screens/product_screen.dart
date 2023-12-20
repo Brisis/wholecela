@@ -64,7 +64,6 @@ class _ProductScreenState extends State<ProductScreen> {
 
   late List<ColorModel> colors;
   late ColorModel? selectedColor;
-  late Cart cart;
 
   @override
   void initState() {
@@ -79,6 +78,11 @@ class _ProductScreenState extends State<ProductScreen> {
     if (colors.isEmpty) {
       selectedColor = null;
     }
+
+    context.read<CartBloc>().add(LoadCart(
+          userId: loggedUser.id,
+          sellerId: widget.sellerId,
+        ));
   }
 
   @override
@@ -345,37 +349,56 @@ class _ProductScreenState extends State<ProductScreen> {
                               Row(
                                 children: [
                                   Expanded(
-                                    child: BlocListener<CartBloc, CartState>(
-                                      listener: (context, state) {
+                                    child: BlocBuilder<CartBloc, CartState>(
+                                      builder: (context, state) {
                                         if (state is LoadedCart) {
-                                          context.read<CartItemBloc>().add(
-                                                AddCartItem(
-                                                  quantity: cartValue,
-                                                  cartId: state.cart.id,
-                                                  productId: product.id,
-                                                ),
-                                              );
+                                          return ElevatedButton(
+                                            onPressed: () {
+                                              context.read<CartItemBloc>().add(
+                                                    AddCartItem(
+                                                      quantity: cartValue,
+                                                      cartId: state.cart.id,
+                                                      productId: product.id,
+                                                    ),
+                                                  );
+                                            },
+                                            child: const Text(
+                                              "Add to Cart",
+                                            ),
+                                          );
                                         }
 
-                                        if (state is CartStateError) {
-                                          context.read<CartBloc>().add(
-                                                CreateCart(
-                                                  userId: loggedUser.id,
-                                                  sellerId: seller.id,
-                                                ),
-                                              );
+                                        if (state is CartStateCreated) {
+                                          return ElevatedButton(
+                                            onPressed: () {
+                                              context.read<CartItemBloc>().add(
+                                                    AddCartItem(
+                                                      quantity: cartValue,
+                                                      cartId: state.cartId,
+                                                      productId: product.id,
+                                                    ),
+                                                  );
+                                            },
+                                            child: const Text(
+                                              "Add to Cart",
+                                            ),
+                                          );
                                         }
+
+                                        return ElevatedButton(
+                                          onPressed: () {
+                                            context.read<CartBloc>().add(
+                                                  CreateCart(
+                                                    userId: loggedUser.id,
+                                                    sellerId: seller.id,
+                                                  ),
+                                                );
+                                          },
+                                          child: const Text(
+                                            "Create Cart",
+                                          ),
+                                        );
                                       },
-                                      child: ElevatedButton(
-                                        onPressed: () {
-                                          context.read<CartBloc>().add(LoadCart(
-                                              userId: loggedUser.id,
-                                              sellerId: seller.id));
-                                        },
-                                        child: const Text(
-                                          "Add to Cart",
-                                        ),
-                                      ),
                                     ),
                                   ),
                                 ],
@@ -393,41 +416,82 @@ class _ProductScreenState extends State<ProductScreen> {
                 },
               ),
             ),
-            floatingActionButton: BlocBuilder<CartBloc, CartState>(
-              builder: (context, state) {
-                if (state is LoadedCart) {
-                  Cart cart = state.cart;
-
-                  return FloatingActionButton(
-                      shape: const CircleBorder(),
-                      onPressed: () {
-                        context
-                            .read<SellerBloc>()
-                            .add(LoadSeller(id: seller.id));
-                        Navigator.push(
-                          context,
-                          CartScreen.route(sellerId: seller.id),
-                        );
-                      },
-                      tooltip: 'My Cart',
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Icon(Icons.shopping_cart),
-                          horizontalSpace(width: 3),
-                          Text(
-                            cart.cartItems.length.toString(),
-                            style: const TextStyle(
-                              fontSize: 13,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                        ],
+            floatingActionButton: BlocListener<CartItemBloc, CartItemState>(
+              listener: (context, state) {
+                if (state is CartItemStateChanged) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text("Item added to cart"),
+                    ),
+                  );
+                  context.read<CartBloc>().add(LoadCart(
+                        userId: loggedUser.id,
+                        sellerId: seller.id,
                       ));
                 }
+              },
+              child: BlocBuilder<CartBloc, CartState>(
+                buildWhen: (previous, current) =>
+                    current.props != previous.props,
+                builder: (context, state) {
+                  if (state is LoadedCart) {
+                    Cart cart = state.cart;
 
-                if (state is CartStateError) {
+                    return FloatingActionButton(
+                        shape: const CircleBorder(),
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            CartScreen.route(sellerId: seller.id),
+                          );
+                        },
+                        tooltip: 'My Cart',
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Icon(Icons.shopping_cart),
+                            horizontalSpace(width: 3),
+                            Text(
+                              cart.cartItems.length.toString(),
+                              style: const TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ],
+                        ));
+                  }
+
+                  if (state is CartStateError) {
+                    return const FloatingActionButton(
+                      shape: CircleBorder(),
+                      onPressed: null,
+                      tooltip: 'My Cart',
+                      child: Icon(
+                        Icons.shopping_cart_outlined,
+                        color: kBlackFaded,
+                      ),
+                    );
+                  }
+
+                  if (state is CartStateLoading) {
+                    return const FloatingActionButton(
+                      shape: CircleBorder(),
+                      onPressed: null,
+                      tooltip: 'My Cart',
+                      child: Center(
+                        child: SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 3,
+                          ),
+                        ),
+                      ),
+                    );
+                  }
+
                   return const FloatingActionButton(
                     shape: CircleBorder(),
                     onPressed: null,
@@ -437,23 +501,8 @@ class _ProductScreenState extends State<ProductScreen> {
                       color: kBlackFaded,
                     ),
                   );
-                }
-
-                return const FloatingActionButton(
-                  shape: CircleBorder(),
-                  onPressed: null,
-                  tooltip: 'My Cart',
-                  child: Center(
-                    child: SizedBox(
-                      width: 20,
-                      height: 20,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 3,
-                      ),
-                    ),
-                  ),
-                );
-              },
+                },
+              ),
             ),
           );
         }

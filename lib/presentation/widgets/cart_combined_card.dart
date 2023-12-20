@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:wholecela/business_logic/cart_bloc/cart_bloc.dart';
 import 'package:wholecela/business_logic/seller/seller_bloc.dart';
 import 'package:wholecela/core/config/constants.dart';
 import 'package:wholecela/data/models/cart.dart';
 import 'package:wholecela/presentation/screens/cart_screen.dart';
+import 'package:wholecela/presentation/screens/wholesale_screen.dart';
 
 class CartCombinedCard extends StatelessWidget {
   final Cart cart;
@@ -29,56 +31,64 @@ class CartCombinedCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Expanded(
-              child: Row(
-                children: [
-                  Container(
-                    height: 50,
-                    width: 50,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(5),
-                      image: cart.seller.imageUrl != null
-                          ? DecorationImage(
-                              //image: AssetImage(product.imageUrl!),
-                              image: NetworkImage(
-                                  "${AppUrls.SERVER_URL}/uploads/thumbnails/${cart.seller.imageUrl}"),
-                              fit: BoxFit.cover,
-                            )
-                          : const DecorationImage(
-                              image: AssetImage("assets/images/shop.png"),
-                              fit: BoxFit.cover,
+              child: GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    WholesaleScreen.route(sellerId: cart.sellerId),
+                  );
+                },
+                child: Row(
+                  children: [
+                    Container(
+                      height: 50,
+                      width: 50,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(5),
+                        image: cart.seller.imageUrl != null
+                            ? DecorationImage(
+                                //image: AssetImage(product.imageUrl!),
+                                image: NetworkImage(
+                                    "${AppUrls.SERVER_URL}/uploads/thumbnails/${cart.seller.imageUrl}"),
+                                fit: BoxFit.cover,
+                              )
+                            : const DecorationImage(
+                                image: AssetImage("assets/images/shop.png"),
+                                fit: BoxFit.cover,
+                              ),
+                      ),
+                    ),
+                    horizontalSpace(
+                      width: 8,
+                    ),
+                    Expanded(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            cart.seller.name,
+                            style: const TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
                             ),
-                    ),
-                  ),
-                  horizontalSpace(
-                    width: 8,
-                  ),
-                  Expanded(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          cart.seller.name,
-                          style: const TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.bold,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
                           ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        verticalSpace(
-                          height: 10,
-                        ),
-                        Text(
-                          "${cart.cartItems.length} items",
-                          style: const TextStyle(
-                            fontSize: 12,
+                          verticalSpace(
+                            height: 10,
                           ),
-                        ),
-                      ],
+                          Text(
+                            "${cart.cartItems.length} items",
+                            style: const TextStyle(
+                              fontSize: 12,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
             horizontalSpace(),
@@ -99,7 +109,9 @@ class CartCombinedCard extends StatelessWidget {
                 ),
                 horizontalSpace(),
                 IconButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    context.read<CartBloc>().add(DeleteCart(cartId: cart.id));
+                  },
                   icon: const Icon(
                     Icons.delete_outline_sharp,
                     color: kWarningColor,

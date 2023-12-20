@@ -223,66 +223,109 @@ class _WholesaleScreenState extends State<WholesaleScreen> {
                     verticalSpace(
                       height: 15,
                     ),
-                    Expanded(
-                      child: GridView.count(
-                        shrinkWrap: true,
-                        crossAxisSpacing: 10,
-                        mainAxisSpacing: 10,
-                        crossAxisCount: 2,
-                        childAspectRatio: 1.6 / 2,
-                        //physics: const NeverScrollableScrollPhysics(),
-                        children: List.generate(
-                          products.length,
-                          (index) => GestureDetector(
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                ProductScreen.route(
-                                  sellerId: seller.id,
-                                  productId: products[index].id,
+                    products.isNotEmpty
+                        ? Expanded(
+                            child: GridView.count(
+                              shrinkWrap: true,
+                              crossAxisSpacing: 10,
+                              mainAxisSpacing: 10,
+                              crossAxisCount: 2,
+                              childAspectRatio: 1.6 / 2,
+                              //physics: const NeverScrollableScrollPhysics(),
+                              children: List.generate(
+                                products.length,
+                                (index) => GestureDetector(
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      ProductScreen.route(
+                                        sellerId: seller.id,
+                                        productId: products[index].id,
+                                      ),
+                                    );
+                                  },
+                                  child: ProductItemCard(
+                                    product: products[index],
+                                  ),
                                 ),
-                              );
-                            },
-                            child: ProductItemCard(
-                              product: products[index],
+                              ),
+                            ),
+                          )
+                        : const Center(
+                            child: Padding(
+                              padding: EdgeInsets.only(top: 50.0),
+                              child: Text(
+                                "Wholesale is Empty",
+                                style: TextStyle(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
                             ),
                           ),
-                        ),
-                      ),
-                    ),
                   ],
                 ),
               ),
             ),
             floatingActionButton: BlocBuilder<CartBloc, CartState>(
+              buildWhen: (previous, current) => current.props != previous.props,
               builder: (context, state) {
                 if (state is LoadedCart) {
                   Cart cart = state.cart;
 
                   return FloatingActionButton(
-                      shape: const CircleBorder(),
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          CartScreen.route(sellerId: seller.id),
-                        );
-                      },
-                      tooltip: 'My Cart',
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Icon(Icons.shopping_cart),
-                          horizontalSpace(width: 3),
-                          Text(
-                            cart.cartItems.length.toString(),
-                            style: const TextStyle(
-                              fontSize: 13,
-                              fontWeight: FontWeight.w500,
-                            ),
+                    shape: const CircleBorder(),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        CartScreen.route(sellerId: seller.id),
+                      );
+                    },
+                    tooltip: 'My Cart',
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Icon(Icons.shopping_cart),
+                        horizontalSpace(width: 3),
+                        Text(
+                          cart.cartItems.length.toString(),
+                          style: const TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w500,
                           ),
-                        ],
-                      ));
+                        ),
+                      ],
+                    ),
+                  );
+                }
+
+                if (state is CartStateCreated) {
+                  return FloatingActionButton(
+                    shape: const CircleBorder(),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        CartScreen.route(sellerId: seller.id),
+                      );
+                    },
+                    tooltip: 'My Cart',
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Icon(Icons.shopping_cart),
+                        horizontalSpace(width: 3),
+                        const Text(
+                          "0",
+                          style: TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
                 }
 
                 if (state is CartStateError) {
@@ -297,18 +340,30 @@ class _WholesaleScreenState extends State<WholesaleScreen> {
                   );
                 }
 
+                if (state is CartStateLoading) {
+                  return const FloatingActionButton(
+                    shape: CircleBorder(),
+                    onPressed: null,
+                    tooltip: 'My Cart',
+                    child: Center(
+                      child: SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 3,
+                        ),
+                      ),
+                    ),
+                  );
+                }
+
                 return const FloatingActionButton(
                   shape: CircleBorder(),
                   onPressed: null,
                   tooltip: 'My Cart',
-                  child: Center(
-                    child: SizedBox(
-                      width: 20,
-                      height: 20,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 3,
-                      ),
-                    ),
+                  child: Icon(
+                    Icons.shopping_cart_outlined,
+                    color: kBlackFaded,
                   ),
                 );
               },

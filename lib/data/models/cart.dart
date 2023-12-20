@@ -44,8 +44,11 @@ class Cart {
         id: json["id"],
         userId: json["userId"],
         sellerId: json["sellerId"],
-        cartItems: List<CartItemModel>.from(
-            json["cartItems"].map((x) => CartItemModel.fromJson(x))),
+        cartItems: (json["cartItems"] as List<dynamic>)
+            .map(
+              (i) => CartItemModel.fromJson(i),
+            )
+            .toList(),
         seller: CartSeller.fromJson(json["seller"]),
         total: toDouble(json["total"]),
       );

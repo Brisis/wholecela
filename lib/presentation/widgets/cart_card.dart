@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:wholecela/business_logic/cart_item_bloc/cart_item_bloc.dart';
 import 'package:wholecela/core/config/constants.dart';
+import 'package:wholecela/core/extensions/price_formatter.dart';
 import 'package:wholecela/data/models/cart_item.dart';
 
 class CartCard extends StatelessWidget {
@@ -67,7 +70,7 @@ class CartCard extends StatelessWidget {
                           height: 10,
                         ),
                         Text(
-                          "${cartItem.quantity} items",
+                          "${cartItem.quantity} items x (${formatPrice(cartItem.product.price)})",
                           style: const TextStyle(
                             fontSize: 12,
                           ),
@@ -83,17 +86,39 @@ class CartCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 IconButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    var qty = cartItem.quantity - 1;
+                    context.read<CartItemBloc>().add(
+                          AddCartItem(
+                            cartId: cartItem.cartId,
+                            productId: cartItem.product.id,
+                            quantity: qty,
+                          ),
+                        );
+                  },
                   icon: const Icon(Icons.remove),
                 ),
                 horizontalSpace(),
                 IconButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    var qty = cartItem.quantity + 1;
+                    context.read<CartItemBloc>().add(
+                          AddCartItem(
+                            cartId: cartItem.cartId,
+                            productId: cartItem.product.id,
+                            quantity: qty,
+                          ),
+                        );
+                  },
                   icon: const Icon(Icons.add),
                 ),
                 horizontalSpace(),
                 IconButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    context
+                        .read<CartItemBloc>()
+                        .add(DeleteCartItem(cartItemId: cartItem.id));
+                  },
                   icon: const Icon(
                     Icons.delete_outline_sharp,
                     color: kWarningColor,

@@ -57,4 +57,23 @@ class CartItemProvider {
       throw const ApiNotRespondingException(message: "Api not responding");
     }
   }
+
+  Future<dynamic> deleteCartItem({required String cartItemId}) async {
+    try {
+      final response = await http.delete(
+        Uri.parse("${AppUrls.SERVER_URL}/cart-items/$cartItemId"),
+        headers: {
+          "Content-Type": "application/json",
+          "accept": "application/json",
+          "Access-Control-Allow-Origin": "*"
+        },
+      );
+
+      return HttpHandler.returnResponse(response);
+    } on SocketException {
+      throw const FetchDataException(message: "No Internet connection");
+    } on TimeoutException {
+      throw const ApiNotRespondingException(message: "Api not responding");
+    }
+  }
 }
