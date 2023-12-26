@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:wholecela/business_logic/auth_bloc/authentication_bloc.dart';
 import 'package:wholecela/business_logic/location_bloc/location_bloc.dart';
 import 'package:wholecela/business_logic/user_bloc/user_bloc.dart';
@@ -40,6 +41,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   late Location? selectedLocation;
   late List<Location> locations;
+
+  final ImagePicker picker = ImagePicker();
+
+  //we can upload image from camera or from gallery based on parameter
+  Future<XFile?> getImage(ImageSource media) async {
+    return await picker.pickImage(source: media);
+  }
 
   @override
   void initState() {
@@ -95,12 +103,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
           actions: [
             IconButton(
-              onPressed: () {
-                // Navigator.push(
-                //   context,
-                //   ProfileScreen.route(),
-                // );
-              },
+              onPressed: null,
               icon: AvatarImage(
                 imageUrl: loggedUser.imageUrl,
               ),
@@ -127,14 +130,24 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    const CircleAvatar(
-                      backgroundImage: AssetImage(
-                        "assets/images/user.jpg",
-                      ),
+                    AvatarImage(
+                      imageUrl: loggedUser.imageUrl,
+                      size: 40,
                     ),
                     horizontalSpace(),
                     IconButton(
-                      onPressed: () {},
+                      onPressed: () async {
+                        XFile? image = await getImage(ImageSource.gallery);
+                        if (image != null) {
+                          context.read<UserBloc>().add(
+                                UserEventUpdateDetails(
+                                  user: loggedUser.copyWith(
+                                    imageUrl: image.path,
+                                  ),
+                                ),
+                              );
+                        }
+                      },
                       icon: const Icon(
                         Icons.edit,
                         size: 16,

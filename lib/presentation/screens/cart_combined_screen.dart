@@ -84,7 +84,7 @@ class _CartCombinedScreenState extends State<CartCombinedScreen> {
                   return ListView(
                     children: [
                       Text(
-                        "Total Carts : ${carts.length}",
+                        "${carts.length} Carts Found",
                         style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w500,
@@ -167,26 +167,26 @@ class _CartCombinedScreenState extends State<CartCombinedScreen> {
           ),
         ),
       ),
-      floatingActionButton: BlocBuilder<CartBloc, CartState>(
-        builder: (context, state) {
-          if (state is LoadedCarts) {
-            if (state.carts.isNotEmpty) {
-              return FloatingActionButton(
-                shape: const CircleBorder(),
-                onPressed: () {},
-                tooltip: 'Empty Cart',
-                child: const Icon(
-                  Icons.delete,
-                  color: kWarningColor,
-                  size: kIconLargeSize,
-                ),
-              );
-            }
-          }
+      // floatingActionButton: BlocBuilder<CartBloc, CartState>(
+      //   builder: (context, state) {
+      //     if (state is LoadedCarts) {
+      //       if (state.carts.isNotEmpty) {
+      //         return FloatingActionButton(
+      //           shape: const CircleBorder(),
+      //           onPressed: () {},
+      //           tooltip: 'Empty Cart',
+      //           child: const Icon(
+      //             Icons.delete,
+      //             color: kWarningColor,
+      //             size: kIconLargeSize,
+      //           ),
+      //         );
+      //       }
+      //     }
 
-          return const SizedBox.shrink();
-        },
-      ),
+      //     return const SizedBox.shrink();
+      //   },
+      // ),
     );
   }
 }

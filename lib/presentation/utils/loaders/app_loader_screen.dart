@@ -11,7 +11,7 @@ class AppLoaderScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: kPrimaryColor,
+      backgroundColor: kWhiteColor,
       body: SafeArea(
         child: Center(
           child: Padding(

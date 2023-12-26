@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 // const kPrimaryColor = Color(0xFFD61EDA);
-const kPrimaryColor = Colors.deepPurple;
+const kPrimaryColor = Color(0xFF673AB7);
 const kSecondaryColor = Color(0xFF0C0B0E);
 const kBackgroundColor = Color(0xFFF1F2F6);
 const kBackgroundColorFaded = Color.fromARGB(255, 221, 222, 227);

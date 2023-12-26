@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:wholecela/core/config/exception_handlers.dart';
@@ -26,9 +28,10 @@ class UserBloc extends Bloc<UserEvent, UserState> {
       try {
         final token = await getAuthToken();
 
-        final userResponse = await userRepository.updateUserDetails(
+        final userResponse = await userRepository.updateUserImage(
           token: token!,
-          user: event.user,
+          userId: event.user.id,
+          image: File(event.user.imageUrl!),
         );
 
         emit(LoadedUser(user: userResponse));

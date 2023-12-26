@@ -135,7 +135,7 @@ class _CartScreenState extends State<CartScreen> {
                               return ListView(
                                 children: [
                                   Text(
-                                    "Total Items : ${cartItems.length}",
+                                    "${cartItems.length} Products",
                                     style: const TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.w500,
@@ -269,24 +269,24 @@ class _CartScreenState extends State<CartScreen> {
                                       verticalSpace(
                                         height: 30,
                                       ),
-                                      Container(
-                                        padding: const EdgeInsets.all(5),
-                                        decoration: BoxDecoration(
-                                          color: Colors.orangeAccent,
-                                          borderRadius:
-                                              BorderRadius.circular(5),
-                                        ),
-                                        child: const Text(
-                                          "Note: 3% delivery charge",
-                                          style: TextStyle(
-                                            fontSize: 14,
-                                            fontWeight: FontWeight.w500,
-                                          ),
-                                        ),
-                                      ),
-                                      verticalSpace(
-                                        height: 30,
-                                      ),
+                                      // Container(
+                                      //   padding: const EdgeInsets.all(5),
+                                      //   decoration: BoxDecoration(
+                                      //     color: Colors.orangeAccent,
+                                      //     borderRadius:
+                                      //         BorderRadius.circular(5),
+                                      //   ),
+                                      //   child: const Text(
+                                      //     "Note: 3% delivery charge",
+                                      //     style: TextStyle(
+                                      //       fontSize: 14,
+                                      //       fontWeight: FontWeight.w500,
+                                      //     ),
+                                      //   ),
+                                      // ),
+                                      // verticalSpace(
+                                      //   height: 30,
+                                      // ),
                                       Row(
                                         children: [
                                           Expanded(
