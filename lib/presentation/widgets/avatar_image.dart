@@ -8,7 +8,7 @@ class AvatarImage extends StatelessWidget {
   const AvatarImage({
     super.key,
     this.imageUrl,
-    this.isSeller,
+    this.isSeller = false,
     this.size = 30,
   });
 
@@ -26,7 +26,7 @@ class AvatarImage extends StatelessWidget {
                 fit: BoxFit.cover,
               )
             : DecorationImage(
-                image: AssetImage(isSeller != null
+                image: AssetImage(isSeller!
                     ? "assets/images/shop.png"
                     : "assets/images/user.jpg"),
                 fit: BoxFit.cover,

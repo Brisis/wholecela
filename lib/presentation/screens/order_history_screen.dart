@@ -55,6 +55,7 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
             },
             icon: AvatarImage(
               imageUrl: loggedUser.imageUrl,
+              isSeller: loggedUser.role == "seller",
             ),
           ),
         ],

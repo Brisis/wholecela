@@ -105,8 +105,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
             IconButton(
               onPressed: null,
               icon: AvatarImage(
-                imageUrl: loggedUser.imageUrl,
-              ),
+                  imageUrl: loggedUser.imageUrl,
+                  isSeller: loggedUser.role == "seller"),
             ),
           ],
         ),

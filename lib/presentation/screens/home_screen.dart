@@ -69,6 +69,7 @@ class _HomeScreenState extends State<HomeScreen> {
             },
             icon: AvatarImage(
               imageUrl: loggedUser.imageUrl,
+              isSeller: loggedUser.role == "seller",
             ),
           ),
         ],

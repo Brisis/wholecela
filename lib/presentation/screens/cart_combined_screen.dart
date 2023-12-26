@@ -62,6 +62,7 @@ class _CartCombinedScreenState extends State<CartCombinedScreen> {
             },
             icon: AvatarImage(
               imageUrl: loggedUser.imageUrl,
+              isSeller: loggedUser.role == "seller",
             ),
           ),
         ],

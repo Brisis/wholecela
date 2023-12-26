@@ -37,6 +37,7 @@ class MenuDrawer extends StatelessWidget {
                 children: [
                   AvatarImage(
                     imageUrl: user.imageUrl,
+                    isSeller: user.role == "seller",
                   ),
                   horizontalSpace(),
                   Column(
