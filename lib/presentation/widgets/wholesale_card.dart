@@ -46,7 +46,7 @@ class WholeSaleCard extends StatelessWidget {
                             ? DecorationImage(
                                 //image: AssetImage(product.imageUrl!),
                                 image: NetworkImage(
-                                    "${AppUrls.SERVER_URL}/uploads/thumbnails/${seller.imageUrl}"),
+                                    "${AppUrls.SERVER_URL}/thumbnails/${seller.imageUrl}"),
                                 fit: BoxFit.cover,
                               )
                             : const DecorationImage(

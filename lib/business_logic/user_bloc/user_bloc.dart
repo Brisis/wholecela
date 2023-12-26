@@ -28,6 +28,29 @@ class UserBloc extends Bloc<UserEvent, UserState> {
       try {
         final token = await getAuthToken();
 
+        final userResponse = await userRepository.updateUserDetails(
+          token: token!,
+          user: event.user,
+        );
+
+        emit(LoadedUser(user: userResponse));
+      } on AppException catch (e) {
+        emit(
+          UserStateError(
+            message: e,
+          ),
+        );
+      }
+    });
+
+    on<UserEventUpdateImage>((event, emit) async {
+      emit(
+        UserStateLoading(),
+      );
+
+      try {
+        final token = await getAuthToken();
+
         final userResponse = await userRepository.updateUserImage(
           token: token!,
           userId: event.user.id,

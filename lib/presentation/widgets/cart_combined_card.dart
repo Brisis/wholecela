@@ -49,7 +49,7 @@ class CartCombinedCard extends StatelessWidget {
                             ? DecorationImage(
                                 //image: AssetImage(product.imageUrl!),
                                 image: NetworkImage(
-                                    "${AppUrls.SERVER_URL}/uploads/thumbnails/${cart.seller.imageUrl}"),
+                                    "${AppUrls.SERVER_URL}/thumbnails/${cart.seller.imageUrl}"),
                                 fit: BoxFit.cover,
                               )
                             : const DecorationImage(

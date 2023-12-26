@@ -132,6 +132,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   children: [
                     AvatarImage(
                       imageUrl: loggedUser.imageUrl,
+                      isSeller: loggedUser.role == "seller",
                       size: 40,
                     ),
                     horizontalSpace(),
@@ -140,7 +141,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         XFile? image = await getImage(ImageSource.gallery);
                         if (image != null) {
                           context.read<UserBloc>().add(
-                                UserEventUpdateDetails(
+                                UserEventUpdateImage(
                                   user: loggedUser.copyWith(
                                     imageUrl: image.path,
                                   ),

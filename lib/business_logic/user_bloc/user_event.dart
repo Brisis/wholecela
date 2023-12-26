@@ -28,4 +28,18 @@ class UserEventUpdateDetails implements UserEvent {
   bool? get stringify => true;
 }
 
+class UserEventUpdateImage implements UserEvent {
+  final User user;
+
+  const UserEventUpdateImage({
+    required this.user,
+  });
+
+  @override
+  List<Object> get props => [user];
+
+  @override
+  bool? get stringify => true;
+}
+
 class UserEventLogoutUser extends UserEvent {}
