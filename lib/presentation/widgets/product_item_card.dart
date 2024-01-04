@@ -60,6 +60,14 @@ class ProductItemCard extends StatelessWidget {
                 ),
                 verticalSpace(),
                 Text(
+                  "${product.quantity} left in stock",
+                  style: const TextStyle(
+                    color: kBlackColor,
+                    fontSize: 13,
+                  ),
+                ),
+                verticalSpace(),
+                Text(
                   formatPrice(product.price),
                   style: const TextStyle(
                     color: kBlackColor,

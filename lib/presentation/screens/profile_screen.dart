@@ -8,6 +8,7 @@ import 'package:wholecela/core/config/constants.dart';
 import 'package:wholecela/data/models/location.dart';
 import 'package:wholecela/data/models/user.dart';
 import 'package:wholecela/presentation/screens/auth/reset_screen.dart';
+import 'package:wholecela/presentation/screens/profile_store_screen.dart';
 import 'package:wholecela/presentation/widgets/avatar_image.dart';
 import 'package:wholecela/presentation/widgets/menu_drawer.dart';
 
@@ -54,9 +55,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
     super.initState();
     loggedUser = context.read<UserBloc>().state.user!;
     locations = context.read<LocationBloc>().state.locations!;
+
     if (locations.isNotEmpty) {
-      selectedLocation = locations.first;
+      if (loggedUser.locationId != null) {
+        selectedLocation = locations
+            .firstWhere((location) => location.id == loggedUser.locationId);
+      } else {
+        selectedLocation = locations.first;
+      }
     }
+
     if (locations.isEmpty) {
       selectedLocation = null;
     }
@@ -172,7 +180,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       context.read<UserBloc>().add(
                             UserEventUpdateDetails(
                               user: loggedUser.copyWith(
-                                name: nameController.text,
+                                name: nameController.text.trim(),
                               ),
                             ),
                           );
@@ -195,7 +203,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       context.read<UserBloc>().add(
                             UserEventUpdateDetails(
                               user: loggedUser.copyWith(
-                                phone: phoneController.text,
+                                phone: phoneController.text.trim(),
                               ),
                             ),
                           );
@@ -218,7 +226,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       context.read<UserBloc>().add(
                             UserEventUpdateDetails(
                               user: loggedUser.copyWith(
-                                street: streetController.text,
+                                street: streetController.text.trim(),
                               ),
                             ),
                           );
@@ -260,6 +268,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         fontWeight: FontWeight.w500,
                       ),
                     ),
+                    loggedUser.locationId == null
+                        ? const Text(
+                            "(None)",
+                            style: TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w400,
+                            ),
+                          )
+                        : const SizedBox.shrink(),
                     BlocBuilder<LocationBloc, LocationState>(
                       builder: (context, state) {
                         if (state is LoadedLocations) {
@@ -287,8 +304,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     );
                                   }).toList(),
                                   onChanged: (Location? newValue) {
+                                    context.read<UserBloc>().add(
+                                          UserEventUpdateDetails(
+                                            user: loggedUser.copyWith(
+                                              locationId: newValue!.id,
+                                            ),
+                                          ),
+                                        );
                                     setState(() {
-                                      selectedLocation = newValue!;
+                                      selectedLocation = newValue;
                                     });
                                   },
                                 )
@@ -368,6 +392,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
           ),
         ),
+        floatingActionButton: loggedUser.role == "seller"
+            ? FloatingActionButton(
+                shape: const CircleBorder(),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    ProfileStoreScreen.route(),
+                  );
+                },
+                tooltip: 'My Store',
+                child: const Icon(
+                  Icons.store,
+                  color: kBlackColor,
+                ),
+              )
+            : null,
       ),
     );
   }

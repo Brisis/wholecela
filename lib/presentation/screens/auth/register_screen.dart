@@ -256,9 +256,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                 if (_formKey.currentState!.validate()) {
                                   context.read<AuthenticationBloc>().add(
                                         AuthenticationEventRegisterUser(
-                                          name: nameController.text,
-                                          email: emailController.text,
-                                          password: passwordController.text,
+                                          name: nameController.text.trim(),
+                                          email: emailController.text.trim(),
+                                          password:
+                                              passwordController.text.trim(),
                                         ),
                                       );
                                 }

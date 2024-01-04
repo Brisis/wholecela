@@ -209,8 +209,9 @@ class _LoginScreenState extends State<LoginScreen> {
                                 if (_formKey.currentState!.validate()) {
                                   context.read<AuthenticationBloc>().add(
                                         AuthenticationEventLoginUser(
-                                          email: emailController.text,
-                                          password: passwordController.text,
+                                          email: emailController.text.trim(),
+                                          password:
+                                              passwordController.text.trim(),
                                         ),
                                       );
                                 }

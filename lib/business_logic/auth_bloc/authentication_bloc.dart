@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:wholecela/core/config/exception_handlers.dart';
@@ -16,6 +18,11 @@ class AuthenticationBloc
   AuthenticationBloc({
     required this.authenticationRepository,
   }) : super(AuthenticationStateUserNotLoggedIn()) {
+    Future<void> waitThrow(String message) async {
+      await Future.delayed(const Duration(seconds: 5));
+      throw Exception(message);
+    }
+
     on<AuthenticationEventLogoutUser>((event, emit) {
       deleteAuthToken();
       //UserData.deleteSavedUser();
@@ -30,13 +37,11 @@ class AuthenticationBloc
         final token = await getAuthToken();
 
         if (token != null) {
-          final loggedUser = await authenticationRepository.authenticate(
-            token: token,
-          );
-
-          // print(loggedUser);
-
-          //await UserData.saveUser(authResponse.user!);
+          final loggedUser = await authenticationRepository
+              .authenticate(
+                token: token,
+              )
+              .timeout(const Duration(seconds: 10));
 
           emit(
             AuthenticationStateUserLoggedIn(
@@ -46,6 +51,13 @@ class AuthenticationBloc
         } else {
           emit(AuthenticationStateUserNotLoggedIn());
         }
+      } on TimeoutException {
+        deleteAuthToken();
+        emit(
+          AuthenticationStateUserLoggedOut(
+            authError: AuthError.from(const AppException()),
+          ),
+        );
       } on AppException catch (e) {
         deleteAuthToken();
         emit(

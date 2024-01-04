@@ -71,13 +71,14 @@ class _ProductScreenState extends State<ProductScreen> {
     context.read<ProductBloc>().add(LoadProduct(id: widget.productId));
     loggedUser = context.read<UserBloc>().state.user!;
     colors = context.read<ColorBloc>().state.colors!;
-    if (colors.isNotEmpty) {
-      selectedColor = colors.firstWhere((color) => color.name == "Any");
-    }
+    selectedColor = null;
+    // if (colors.isNotEmpty) {
+    //   selectedColor = colors.first;
+    // }
 
-    if (colors.isEmpty) {
-      selectedColor = null;
-    }
+    // if (colors.isEmpty) {
+    //   selectedColor = null;
+    // }
 
     context.read<CartBloc>().add(LoadCart(
           userId: loggedUser.id,
@@ -213,38 +214,35 @@ class _ProductScreenState extends State<ProductScreen> {
                                       horizontalSpace(),
                                       selectedColor != null
                                           ? SizedBox(
-                                              child: selectedColor!.name ==
-                                                      "Any"
-                                                  ? const Text(
-                                                      "Any Color",
-                                                      style: TextStyle(
-                                                        fontSize: 14,
-                                                        fontWeight:
-                                                            FontWeight.normal,
-                                                      ),
-                                                    )
-                                                  : CircleAvatar(
-                                                      backgroundColor:
-                                                          HexColor.fromHex(
-                                                              selectedColor!
-                                                                  .hexCode),
-                                                      radius: 8,
-                                                    ),
+                                              child: CircleAvatar(
+                                                backgroundColor:
+                                                    HexColor.fromHex(
+                                                  selectedColor!.hexCode,
+                                                ),
+                                                radius: 8,
+                                              ),
                                             )
-                                          : const Text("None"),
+                                          : const Text(
+                                              "Any Color",
+                                              style: TextStyle(
+                                                fontSize: 14,
+                                                fontWeight: FontWeight.normal,
+                                              ),
+                                            ),
                                     ],
                                   ),
                                   BlocBuilder<ColorBloc, ColorState>(
                                     builder: (context, state) {
                                       if (state is LoadedColors) {
-                                        return selectedColor != null
+                                        return state.colors.isNotEmpty
                                             ? DropdownButton(
                                                 underline:
                                                     const SizedBox.shrink(),
                                                 focusColor: Colors.white,
                                                 borderRadius:
                                                     BorderRadius.circular(10),
-                                                value: selectedColor,
+                                                value: selectedColor ??
+                                                    state.colors.first,
                                                 icon: const Icon(
                                                     Icons.keyboard_arrow_down),
                                                 items: colors

@@ -8,6 +8,7 @@ import 'package:wholecela/business_logic/color_bloc/color_bloc.dart';
 import 'package:wholecela/business_logic/location_bloc/location_bloc.dart';
 import 'package:wholecela/business_logic/product/product_bloc.dart';
 import 'package:wholecela/business_logic/seller/seller_bloc.dart';
+import 'package:wholecela/business_logic/store_product/store_product_bloc.dart';
 import 'package:wholecela/business_logic/user_bloc/user_bloc.dart';
 import 'package:wholecela/data/repositories/authentication/authentication_repository.dart';
 import 'package:wholecela/data/repositories/cart/cart_repository.dart';
@@ -71,6 +72,13 @@ class AppBlocs extends StatelessWidget {
         ),
         BlocProvider(
           create: (context) => ProductBloc(
+            productRepository:
+                RepositoryProvider.of<ProductRepository>(context),
+          ),
+          lazy: false,
+        ),
+        BlocProvider(
+          create: (context) => StoreProductBloc(
             productRepository:
                 RepositoryProvider.of<ProductRepository>(context),
           ),

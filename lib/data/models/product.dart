@@ -31,6 +31,32 @@ class Product extends Equatable {
     required this.colors,
   });
 
+  Product copyWith({
+    String? title,
+    String? imageUrl,
+    String? description,
+    int? quantity,
+    double? price,
+    bool? authenticity,
+    bool? returnPolicy,
+    bool? warranty,
+    String? categoryId,
+    List<ColorModel>? colors,
+  }) =>
+      Product(
+        id: id,
+        title: title ?? this.title,
+        imageUrl: imageUrl ?? this.imageUrl,
+        description: description ?? this.description,
+        quantity: quantity ?? this.quantity,
+        price: price ?? this.price,
+        authenticity: authenticity ?? this.authenticity,
+        returnPolicy: returnPolicy ?? this.returnPolicy,
+        warranty: warranty ?? this.warranty,
+        categoryId: categoryId ?? this.categoryId,
+        colors: colors ?? this.colors,
+      );
+
   String toRawJson() => json.encode(toJson());
 
   Product.fromJson(Map<String, dynamic> json)
@@ -45,9 +71,11 @@ class Product extends Equatable {
         returnPolicy = json["returnPolicy"],
         warranty = json["warranty"],
         categoryId = json["categoryId"],
-        colors = (json["colors"] as List<dynamic>)
-            .map((i) => ColorModel.fromJson(i))
-            .toList();
+        colors = json["colors"] == null
+            ? []
+            : (json["colors"] as List<dynamic>)
+                .map((i) => ColorModel.fromJson(i))
+                .toList();
 
   Map<String, dynamic> toJson() => {
         "id": id,
