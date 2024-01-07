@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:wholecela/business_logic/cart_bloc/cart_bloc.dart';
 import 'package:wholecela/business_logic/location_bloc/location_bloc.dart';
-import 'package:wholecela/business_logic/seller/seller_bloc.dart';
+import 'package:wholecela/business_logic/seller_bloc/seller_bloc.dart';
 import 'package:wholecela/business_logic/user_bloc/user_bloc.dart';
 import 'package:wholecela/data/models/cart.dart';
 import 'package:wholecela/data/models/location.dart';

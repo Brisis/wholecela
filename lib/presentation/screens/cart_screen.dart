@@ -3,13 +3,15 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:wholecela/business_logic/cart_bloc/cart_bloc.dart';
 import 'package:wholecela/business_logic/cart_item_bloc/cart_item_bloc.dart';
 import 'package:wholecela/business_logic/location_bloc/location_bloc.dart';
-import 'package:wholecela/business_logic/seller/seller_bloc.dart';
+import 'package:wholecela/business_logic/order_bloc/order_bloc.dart';
+import 'package:wholecela/business_logic/seller_bloc/seller_bloc.dart';
 import 'package:wholecela/business_logic/user_bloc/user_bloc.dart';
 import 'package:wholecela/core/config/constants.dart';
 import 'package:wholecela/core/extensions/price_formatter.dart';
 import 'package:wholecela/data/models/cart.dart';
 import 'package:wholecela/data/models/cart_item.dart';
 import 'package:wholecela/data/models/location.dart';
+import 'package:wholecela/data/models/order_item_dto.dart';
 import 'package:wholecela/data/models/seller.dart';
 import 'package:wholecela/data/models/user.dart';
 import 'package:wholecela/presentation/screens/checkout_screen.dart';
@@ -287,22 +289,90 @@ class _CartScreenState extends State<CartScreen> {
                                       // verticalSpace(
                                       //   height: 30,
                                       // ),
-                                      Row(
-                                        children: [
-                                          Expanded(
-                                            child: ElevatedButton(
-                                              onPressed: () {
-                                                Navigator.push(
-                                                  context,
-                                                  CheckoutScreen.route(),
-                                                );
-                                              },
-                                              child: const Text(
-                                                "Make Payment",
+                                      BlocConsumer<OrderBloc, OrderState>(
+                                        listener: (context, state) {
+                                          if (state is OrderStateAdded) {
+                                            List<OrderItemDto> orderItems = [];
+                                            for (var i = 0;
+                                                i < cartItems.length;
+                                                i++) {
+                                              OrderItemDto orderItemDto =
+                                                  OrderItemDto(
+                                                quantity: cartItems[i].quantity,
+                                                productId:
+                                                    cartItems[i].product.id,
+                                                orderId: state.orderId,
+                                              );
+
+                                              orderItems.add(orderItemDto);
+                                            }
+                                            context
+                                                .read<OrderBloc>()
+                                                .add(AddOrderItems(
+                                                  orderItems: orderItems,
+                                                ));
+                                          }
+
+                                          if (state is OrderStateCreated) {
+                                            context
+                                                .read<CartBloc>()
+                                                .add(DeleteCart(
+                                                  cartId: cart.id,
+                                                ));
+                                            Navigator.push(
+                                              context,
+                                              CheckoutScreen.route(),
+                                            );
+                                          }
+                                        },
+                                        builder: (context, state) {
+                                          if (state is OrderStateLoading) {
+                                            return Row(
+                                              children: [
+                                                Expanded(
+                                                  child: ElevatedButton(
+                                                    onPressed: () {},
+                                                    child: const SizedBox(
+                                                      width: 20,
+                                                      height: 20,
+                                                      child:
+                                                          CircularProgressIndicator(
+                                                        strokeWidth: 2,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ],
+                                            );
+                                          }
+                                          return Row(
+                                            children: [
+                                              Expanded(
+                                                child: ElevatedButton(
+                                                  onPressed: () {
+                                                    if (selectedLocation !=
+                                                        null) {
+                                                      context
+                                                          .read<OrderBloc>()
+                                                          .add(AddOrder(
+                                                            status: "CREATED",
+                                                            totalPrice: 0,
+                                                            userId:
+                                                                loggedUser.id,
+                                                            locationId:
+                                                                selectedLocation!
+                                                                    .id,
+                                                          ));
+                                                    }
+                                                  },
+                                                  child: const Text(
+                                                    "Make Payment",
+                                                  ),
+                                                ),
                                               ),
-                                            ),
-                                          ),
-                                        ],
+                                            ],
+                                          );
+                                        },
                                       ),
                                     ],
                                   ),

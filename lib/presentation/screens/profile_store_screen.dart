@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:wholecela/business_logic/category_bloc/category_bloc.dart';
-import 'package:wholecela/business_logic/seller/seller_bloc.dart';
+import 'package:wholecela/business_logic/seller_bloc/seller_bloc.dart';
 import 'package:wholecela/business_logic/user_bloc/user_bloc.dart';
 import 'package:wholecela/data/models/category.dart';
 import 'package:wholecela/data/models/seller.dart';

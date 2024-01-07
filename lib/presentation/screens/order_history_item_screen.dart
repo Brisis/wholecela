@@ -5,41 +5,42 @@ import 'package:wholecela/business_logic/user_bloc/user_bloc.dart';
 import 'package:wholecela/core/config/constants.dart';
 import 'package:wholecela/core/extensions/price_formatter.dart';
 import 'package:wholecela/data/models/user.dart';
-import 'package:wholecela/presentation/screens/order_history_item_screen.dart';
 import 'package:wholecela/presentation/screens/profile_screen.dart';
 import 'package:wholecela/presentation/widgets/avatar_image.dart';
-import 'package:wholecela/presentation/widgets/menu_drawer.dart';
 
-class OrderHistoryScreen extends StatefulWidget {
-  static Route route() {
+class OrderHistoryItemScreen extends StatefulWidget {
+  final String orderId;
+  static Route route({required String orderId}) {
     return MaterialPageRoute(
-      builder: (context) => const OrderHistoryScreen(),
+      builder: (context) => OrderHistoryItemScreen(
+        orderId: orderId,
+      ),
     );
   }
 
-  const OrderHistoryScreen({super.key});
+  const OrderHistoryItemScreen({
+    super.key,
+    required this.orderId,
+  });
 
   @override
-  State<OrderHistoryScreen> createState() => _OrderHistoryScreenState();
+  State<OrderHistoryItemScreen> createState() => _OrderHistoryItemScreenState();
 }
 
-class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
+class _OrderHistoryItemScreenState extends State<OrderHistoryItemScreen> {
   late User loggedUser;
 
   @override
   void initState() {
     super.initState();
     loggedUser = context.read<UserBloc>().state.user!;
-    context.read<OrderBloc>().add(LoadOrders(userId: loggedUser.id));
+    context.read<OrderBloc>().add(LoadOrder(id: widget.orderId));
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: kBackgroundColor,
-      drawer: MenuDrawer(
-        user: loggedUser,
-      ),
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: const Text(
@@ -66,22 +67,22 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
       ),
       body: RefreshIndicator(
         onRefresh: () async {
-          context.read<OrderBloc>().add(LoadOrders(userId: loggedUser.id));
+          context.read<OrderBloc>().add(LoadOrder(id: widget.orderId));
         },
         color: kPrimaryColor,
         child: Padding(
             padding: const EdgeInsets.all(15.0),
             child: BlocBuilder<OrderBloc, OrderState>(
-              buildWhen: (previous, current) => previous.props != current.props,
               builder: (context, state) {
-                if (state is LoadedOrders) {
-                  final orders = state.orders;
-                  if (orders.isEmpty) {
+                if (state is LoadedOrder) {
+                  final order = state.order;
+                  final orderItems = order.orderItems;
+                  if (orderItems.isEmpty) {
                     return const Center(
                       child: Padding(
                         padding: EdgeInsets.only(top: 50.0),
                         child: Text(
-                          "Your order history is Empty",
+                          "Your order is Empty",
                           style: TextStyle(
                             fontSize: 15,
                             fontWeight: FontWeight.w500,
@@ -97,7 +98,7 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           const Text(
-                            "Purchase History",
+                            "Order Details",
                             style: TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.w500,
@@ -107,6 +108,27 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
                             onPressed: () {},
                             child: const Text(
                               "Download",
+                            ),
+                          ),
+                        ],
+                      ),
+                      verticalSpace(height: 30),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Text(
+                            "Order: #${order.id.substring(1, 10).replaceAll(RegExp(r'[^\w\s]+'), '').toUpperCase()}",
+                            style: const TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                          Text(
+                            "Status: ${order.status}",
+                            style: const TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w500,
                             ),
                           ),
                         ],
@@ -121,7 +143,7 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
                                 padding: EdgeInsets.symmetric(vertical: 5),
                                 child: Center(
                                   child: Text(
-                                    "Invoice #",
+                                    "Product Name",
                                     style: TextStyle(
                                       fontWeight: FontWeight.bold,
                                     ),
@@ -164,32 +186,25 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
                             ],
                           ),
                           ...List<TableRow>.generate(
-                            orders.length,
+                            orderItems.length,
                             (index) => TableRow(
                               children: [
                                 GestureDetector(
-                                  onTap: () {
-                                    Navigator.push(
-                                      context,
-                                      OrderHistoryItemScreen.route(
-                                        orderId: orders[index].id,
-                                      ),
-                                    );
-                                  },
+                                  onTap: () {},
                                   child: Padding(
                                     padding: const EdgeInsets.symmetric(
-                                        vertical: 10),
+                                      horizontal: 3,
+                                      vertical: 10,
+                                    ),
                                     child: Center(
                                       child: Text(
-                                        orders[index]
-                                            .id
-                                            .substring(1, 10)
-                                            .replaceAll(RegExp(r'[^\w\s]+'), '')
-                                            .toUpperCase(),
+                                        orderItems[index].product.title,
                                         style: const TextStyle(
                                           color: kPrimaryColor,
                                           fontWeight: FontWeight.bold,
                                         ),
+                                        maxLines: 2,
+                                        overflow: TextOverflow.ellipsis,
                                       ),
                                     ),
                                   ),
@@ -198,8 +213,8 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
                                   padding:
                                       const EdgeInsets.symmetric(vertical: 10),
                                   child: Center(
-                                    child: Text(
-                                        "${orders[index].orderItems.length}"),
+                                    child:
+                                        Text("${orderItems[index].quantity}"),
                                   ),
                                 ),
                                 Padding(
@@ -207,29 +222,31 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
                                       const EdgeInsets.symmetric(vertical: 10),
                                   child: Center(
                                     child: Text(
-                                      formatPrice(orders[index].totalPrice),
+                                      formatPrice(orderItems[index].quantity *
+                                          orderItems[index].product.price),
                                     ),
                                   ),
                                 ),
-                                orders[index].status == "PENDING"
-                                    ? Container(
-                                        padding: const EdgeInsets.symmetric(
-                                            vertical: 10),
-                                        decoration: const BoxDecoration(
-                                            color: Colors.orangeAccent),
-                                        child: const Center(
-                                          child: Text("IN-PROGRESS"),
-                                        ),
-                                      )
-                                    : Container(
-                                        padding: const EdgeInsets.symmetric(
-                                            vertical: 10),
-                                        decoration: const BoxDecoration(
-                                            color: Colors.greenAccent),
-                                        child: const Center(
-                                          child: Text("DELIVERED"),
-                                        ),
-                                      ),
+                                Container(
+                                  height: 50,
+                                  width: 50,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(5),
+                                    image: orderItems[index].product.imageUrl !=
+                                            null
+                                        ? DecorationImage(
+                                            //image: AssetImage(product.imageUrl!),
+                                            image: NetworkImage(
+                                                "${AppUrls.SERVER_URL}/thumbnails/${orderItems[index].product.imageUrl}"),
+                                            fit: BoxFit.contain,
+                                          )
+                                        : const DecorationImage(
+                                            image: AssetImage(
+                                                "assets/images/product.jpg"),
+                                            fit: BoxFit.contain,
+                                          ),
+                                  ),
+                                ),
                               ],
                             ),
                           ),

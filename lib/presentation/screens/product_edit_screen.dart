@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:wholecela/business_logic/category_bloc/category_bloc.dart';
 import 'package:wholecela/business_logic/color_bloc/color_bloc.dart';
-import 'package:wholecela/business_logic/seller/seller_bloc.dart';
+import 'package:wholecela/business_logic/seller_bloc/seller_bloc.dart';
 import 'package:wholecela/business_logic/store_product/store_product_bloc.dart';
 import 'package:wholecela/business_logic/user_bloc/user_bloc.dart';
 import 'package:wholecela/core/extensions/price_formatter.dart';

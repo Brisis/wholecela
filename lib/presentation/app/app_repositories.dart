@@ -12,6 +12,8 @@ import 'package:wholecela/data/repositories/color/color_provider.dart';
 import 'package:wholecela/data/repositories/color/color_repository.dart';
 import 'package:wholecela/data/repositories/location/location_provider.dart';
 import 'package:wholecela/data/repositories/location/location_repository.dart';
+import 'package:wholecela/data/repositories/order/order_provider.dart';
+import 'package:wholecela/data/repositories/order/order_repository.dart';
 import 'package:wholecela/data/repositories/product/product_provider.dart';
 import 'package:wholecela/data/repositories/product/product_repository.dart';
 import 'package:wholecela/data/repositories/seller/seller_provider.dart';
@@ -73,6 +75,11 @@ class AppRepositories extends StatelessWidget {
         RepositoryProvider(
           create: (context) => CartItemRepository(
             cartItemProvider: CartItemProvider(),
+          ),
+        ),
+        RepositoryProvider(
+          create: (context) => OrderRepository(
+            orderProvider: OrderProvider(),
           ),
         ),
       ],

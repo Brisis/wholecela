@@ -1,14 +1,15 @@
 import 'dart:convert';
 
+import 'package:equatable/equatable.dart';
 import 'package:wholecela/core/extensions/convert_double.dart';
 
-class CartItem {
+class CartItem extends Equatable {
   final String id;
   final int quantity;
   final String cartId;
   final CartItemProduct product;
 
-  CartItem({
+  const CartItem({
     required this.id,
     required this.quantity,
     required this.cartId,
@@ -46,6 +47,17 @@ class CartItem {
         "cartId": cartId,
         "product": product.toJson(),
       };
+
+  @override
+  List<Object?> get props => [
+        id,
+        quantity,
+        cartId,
+        product,
+      ];
+
+  @override
+  bool? get stringify => true;
 }
 
 class CartItemProduct {

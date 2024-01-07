@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:wholecela/business_logic/cart_bloc/cart_bloc.dart';
-import 'package:wholecela/business_logic/seller/seller_bloc.dart';
+import 'package:wholecela/business_logic/seller_bloc/seller_bloc.dart';
 import 'package:wholecela/core/config/constants.dart';
 import 'package:wholecela/data/models/cart.dart';
 import 'package:wholecela/presentation/screens/cart_screen.dart';

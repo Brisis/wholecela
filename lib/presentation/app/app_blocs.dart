@@ -6,8 +6,9 @@ import 'package:wholecela/business_logic/cart_item_bloc/cart_item_bloc.dart';
 import 'package:wholecela/business_logic/category_bloc/category_bloc.dart';
 import 'package:wholecela/business_logic/color_bloc/color_bloc.dart';
 import 'package:wholecela/business_logic/location_bloc/location_bloc.dart';
-import 'package:wholecela/business_logic/product/product_bloc.dart';
-import 'package:wholecela/business_logic/seller/seller_bloc.dart';
+import 'package:wholecela/business_logic/order_bloc/order_bloc.dart';
+import 'package:wholecela/business_logic/product_bloc/product_bloc.dart';
+import 'package:wholecela/business_logic/seller_bloc/seller_bloc.dart';
 import 'package:wholecela/business_logic/store_product/store_product_bloc.dart';
 import 'package:wholecela/business_logic/user_bloc/user_bloc.dart';
 import 'package:wholecela/data/repositories/authentication/authentication_repository.dart';
@@ -16,6 +17,7 @@ import 'package:wholecela/data/repositories/cart_item/cart_item_repository.dart'
 import 'package:wholecela/data/repositories/category/category_repository.dart';
 import 'package:wholecela/data/repositories/color/color_repository.dart';
 import 'package:wholecela/data/repositories/location/location_repository.dart';
+import 'package:wholecela/data/repositories/order/order_repository.dart';
 import 'package:wholecela/data/repositories/product/product_repository.dart';
 import 'package:wholecela/data/repositories/seller/seller_repository.dart';
 import 'package:wholecela/data/repositories/user/user_repository.dart';
@@ -94,6 +96,12 @@ class AppBlocs extends StatelessWidget {
           create: (context) => CartItemBloc(
             cartItemRepository:
                 RepositoryProvider.of<CartItemRepository>(context),
+          ),
+          lazy: false,
+        ),
+        BlocProvider(
+          create: (context) => OrderBloc(
+            orderRepository: RepositoryProvider.of<OrderRepository>(context),
           ),
           lazy: false,
         ),
