@@ -6,7 +6,7 @@ class Order {
   final String status;
   final double totalPrice;
   final Location location;
-  final User user;
+  final UserModel user;
   final List<OrderItemModel> orderItems;
 
   Order({
@@ -25,7 +25,7 @@ class Order {
     String? status,
     double? totalPrice,
     Location? location,
-    User? user,
+    UserModel? user,
     List<OrderItemModel>? orderItems,
   }) =>
       Order(
@@ -48,7 +48,7 @@ class Order {
         status: json["status"],
         totalPrice: json["totalPrice"]?.toDouble(),
         location: Location.fromJson(json["location"]),
-        user: User.fromJson(json["user"]),
+        user: UserModel.fromJson(json["user"]),
         orderItems: List<OrderItemModel>.from(
             json["orderItems"].map((x) => OrderItemModel.fromJson(x))),
       );
@@ -193,29 +193,30 @@ class Product {
       };
 }
 
-class User {
+class UserModel {
   final String name;
   final String phone;
 
-  User({
+  UserModel({
     required this.name,
     required this.phone,
   });
 
-  User copyWith({
+  UserModel copyWith({
     String? name,
     String? phone,
   }) =>
-      User(
+      UserModel(
         name: name ?? this.name,
         phone: phone ?? this.phone,
       );
 
-  factory User.fromRawJson(String str) => User.fromJson(json.decode(str));
+  factory UserModel.fromRawJson(String str) =>
+      UserModel.fromJson(json.decode(str));
 
   String toRawJson() => json.encode(toJson());
 
-  factory User.fromJson(Map<String, dynamic> json) => User(
+  factory UserModel.fromJson(Map<String, dynamic> json) => UserModel(
         name: json["name"],
         phone: json["phone"],
       );

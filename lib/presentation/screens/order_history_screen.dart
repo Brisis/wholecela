@@ -4,6 +4,7 @@ import 'package:wholecela/business_logic/order_bloc/order_bloc.dart';
 import 'package:wholecela/business_logic/user_bloc/user_bloc.dart';
 import 'package:wholecela/core/config/constants.dart';
 import 'package:wholecela/core/extensions/price_formatter.dart';
+import 'package:wholecela/data/models/order.dart';
 import 'package:wholecela/data/models/user.dart';
 import 'package:wholecela/presentation/screens/order_history_item_screen.dart';
 import 'package:wholecela/presentation/screens/profile_screen.dart';
@@ -25,6 +26,8 @@ class OrderHistoryScreen extends StatefulWidget {
 
 class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
   late User loggedUser;
+
+  List<Order> orders = [];
 
   @override
   void initState() {
@@ -72,7 +75,8 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
         child: Padding(
             padding: const EdgeInsets.all(15.0),
             child: BlocBuilder<OrderBloc, OrderState>(
-              buildWhen: (previous, current) => previous.props != current.props,
+              buildWhen: (previous, current) =>
+                  previous != current && current is LoadedOrders,
               builder: (context, state) {
                 if (state is LoadedOrders) {
                   final orders = state.orders;
@@ -212,22 +216,42 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
                                   ),
                                 ),
                                 orders[index].status == "PENDING"
-                                    ? Container(
-                                        padding: const EdgeInsets.symmetric(
-                                            vertical: 10),
-                                        decoration: const BoxDecoration(
-                                            color: Colors.orangeAccent),
-                                        child: const Center(
-                                          child: Text("IN-PROGRESS"),
+                                    ? GestureDetector(
+                                        onTap: () {
+                                          Navigator.push(
+                                            context,
+                                            OrderHistoryItemScreen.route(
+                                              orderId: orders[index].id,
+                                            ),
+                                          );
+                                        },
+                                        child: Container(
+                                          padding: const EdgeInsets.symmetric(
+                                              vertical: 10),
+                                          decoration: const BoxDecoration(
+                                              color: Colors.orangeAccent),
+                                          child: const Center(
+                                            child: Text("IN-PROGRESS"),
+                                          ),
                                         ),
                                       )
-                                    : Container(
-                                        padding: const EdgeInsets.symmetric(
-                                            vertical: 10),
-                                        decoration: const BoxDecoration(
-                                            color: Colors.greenAccent),
-                                        child: const Center(
-                                          child: Text("DELIVERED"),
+                                    : GestureDetector(
+                                        onTap: () {
+                                          Navigator.push(
+                                            context,
+                                            OrderHistoryItemScreen.route(
+                                              orderId: orders[index].id,
+                                            ),
+                                          );
+                                        },
+                                        child: Container(
+                                          padding: const EdgeInsets.symmetric(
+                                              vertical: 10),
+                                          decoration: const BoxDecoration(
+                                              color: Colors.greenAccent),
+                                          child: const Center(
+                                            child: Text("DELIVERED"),
+                                          ),
                                         ),
                                       ),
                               ],
